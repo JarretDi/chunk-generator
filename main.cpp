@@ -51,6 +51,8 @@ int main() {
 		std::cout << e.what() << std::endl;
 	}
 
+	Shader blockShader("shader.vs", "shader.fs");
+
 	while (!glfwWindowShouldClose(window)) {
 		process_input(window);
 
