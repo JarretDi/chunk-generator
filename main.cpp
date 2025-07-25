@@ -17,15 +17,43 @@ constexpr int WIDTH = 800;
 constexpr int HEIGHT = 600;
 
 GLFWwindow * window;
+Camera camera;
 
 void frame_buffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
 void process_input(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
 	}
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		camera.ProcessKeyboard(FORWARD, deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		camera.ProcessKeyboard(LEFT, deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		camera.ProcessKeyboard(BACKWARD, deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		camera.ProcessKeyboard(RIGHT, deltaTime);
+	}
+}
+
+float lastX = WIDTH / 2, lastY = HEIGHT / 2;
+
+void process_mouse_movement(GLFWwindow* window, double xPos, double yPos) {
+	double xOffset = xPos - lastX;
+	double yOffset = lastY - yPos;
+
+	lastX = xPos;
+	lastY = yPos;
+
+	camera.ProcessMouseMovement(xOffset, yOffset, true);
 }
 
 void initialize() {
@@ -48,6 +76,8 @@ void initialize() {
 
 	glViewport(0, 0, 800, 600);
 	glfwSetFramebufferSizeCallback(window, &frame_buffer_size_callback);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(window, &process_mouse_movement);
 }
 
 const float cubeVertices[] = {
@@ -112,11 +142,15 @@ int main() {
 	bufferCubeData(cubeVAO, cubeVBO, cubeEBO);
 
 	Shader blockShader("shader.vs", "shader.fs");
-	Camera camera(vec3(0.0f, 0.0f, 3.0f));
+	camera = Camera(vec3(0.0f, 0.0f, 3.0f));
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	while (!glfwWindowShouldClose(window)) {
+		float currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+
 		process_input(window);
 		
 		glClearColor(0.3, 0.75, 0.85, 1.0);
