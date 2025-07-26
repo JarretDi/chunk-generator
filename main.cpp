@@ -9,6 +9,7 @@
 
 #include "shader.h"
 #include "camera.h"
+#include "block_types.h"
 
 using glm::vec3;
 using glm::mat4;
@@ -80,40 +81,6 @@ void initialize() {
 	glfwSetCursorPosCallback(window, &process_mouse_movement);
 }
 
-const float cubeVertices[] = {
-	// front face
-	-0.5, -0.5, 0.5, // bottom left
-	-0.5,  0.5, 0.5, // top left
-	 0.5,  0.5, 0.5, // top right
-	 0.5, -0.5, 0.5, // bottom right
-	// back face
-	-0.5, -0.5, -0.5,
-	-0.5,  0.5, -0.5,
-	 0.5,  0.5, -0.5,
-	 0.5, -0.5, -0.5,
-};
-
-const int cubeIndices[] = {
-	// front face
-	0, 1, 2,
-	0, 2, 3,
-	// top face
-	1, 5, 6,
-	1, 6, 2,
-	// right face
-	2, 3, 7,
-	2, 7, 6,
-	// bottom face
-	0, 4, 7,
-	0, 7, 3,
-	// left face
-	0, 1, 5,
-	0, 5, 4,
-	// back face
-	4, 5, 6,
-	4, 6, 7
-};
-
 void bufferCubeData(unsigned int & cubeVAO, unsigned int& cubeVBO, unsigned int& cubeEBO) {
 	glGenVertexArrays(1, &cubeVAO);
 	glGenBuffers(1, &cubeVBO);
@@ -144,7 +111,7 @@ int main() {
 	Shader blockShader("shader.vs", "shader.fs");
 	camera = Camera(vec3(0.0f, 0.0f, 3.0f));
 
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glEnable(GL_DEPTH_TEST);
 
 	while (!glfwWindowShouldClose(window)) {
 		float currentFrame = glfwGetTime();
@@ -154,7 +121,7 @@ int main() {
 		process_input(window);
 		
 		glClearColor(0.3, 0.75, 0.85, 1.0);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		blockShader.use();
 		mat4 model(1.0f);
@@ -164,10 +131,17 @@ int main() {
 		blockShader.setMat4("view", view);
 		blockShader.setMat4("projection", projection);
 
-		blockShader.setVec3("vertexColour", vec3(0.25, 0.85, 0.3));
 
 		glBindVertexArray(cubeVAO);
+
+		blockShader.setVec3("vertexColour", vec3(0.25, 0.75, 0.4));
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+		blockShader.setVec3("vertexColour", vec3(0));
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+		
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
