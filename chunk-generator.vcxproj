@@ -128,11 +128,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="chunk.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="block_types.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="chunk.h" />
     <ClInclude Include="shader.h" />
   </ItemGroup>
   <ItemGroup>
