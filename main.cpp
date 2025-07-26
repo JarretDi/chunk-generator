@@ -10,6 +10,7 @@
 #include "shader.h"
 #include "camera.h"
 #include "block_types.h"
+#include "chunk.h"
 
 using glm::vec3;
 using glm::mat4;
@@ -111,6 +112,9 @@ int main() {
 	Shader blockShader("shader.vs", "shader.fs");
 	camera = Camera(vec3(0.0f, 0.0f, 3.0f));
 
+	// setup our test chunk
+	Chunk chunk(cubeVAO);
+
 	glEnable(GL_DEPTH_TEST);
 
 	while (!glfwWindowShouldClose(window)) {
@@ -136,11 +140,11 @@ int main() {
 
 		blockShader.setVec3("vertexColour", vec3(0.25, 0.75, 0.4));
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+		chunk.draw();
 
 		blockShader.setVec3("vertexColour", vec3(0));
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+		chunk.draw();
 		
 
 		glfwSwapBuffers(window);

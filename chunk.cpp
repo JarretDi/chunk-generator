@@ -1,7 +1,7 @@
 #include "chunk.h"
 
 Chunk::Chunk(unsigned int VAO, int worldx, int worldy) : VAO(VAO), worldx(worldx), worldy(worldy) {
-	std::memset(blocks, 0, sizeof(blocks));
+	std::memset(blocks, 1, sizeof(blocks));
 }
 
 void Chunk::draw() {
@@ -38,7 +38,7 @@ void Chunk::draw() {
 		}
 	}
 	
-	// reset the buffer data
+	// reset the buffer data, just in case
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
 }
 
