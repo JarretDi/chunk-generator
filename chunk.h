@@ -6,8 +6,8 @@
 #include <algorithm> // for fill
 #include <memory>  // for unique ptr
 
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 #include "block.h"
 #include "arr3_hash.hpp"
@@ -23,8 +23,8 @@ contains 16 x 16 x 128 blocks
 */
 
 static constexpr int CHUNK_MAX_X = 16;
-static constexpr int CHUNK_MAX_Y = 16;
-static constexpr int CHUNK_MAX_Z = 128;
+static constexpr int CHUNK_MAX_Y = 128;
+static constexpr int CHUNK_MAX_Z = 16;
 
 class Chunk
 {
@@ -44,6 +44,8 @@ private:
 	void addBlockMesh(vec3 coords, unordered_map<vec3, int, vec3Hash> & vertexToIndex);
 
 	void addBlockVertex(vec3 coords, int index, unordered_map<vec3, int, vec3Hash>& vertexToIndex);
+
+	void generate(uint32_t seed = UINT32_MAX);
 
 public:
 	Chunk(int worldx = 0, int worldy = 0);
