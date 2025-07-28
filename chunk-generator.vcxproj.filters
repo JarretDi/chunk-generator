@@ -35,7 +35,7 @@
     <ClInclude Include="camera.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="block_types.h">
+    <ClInclude Include="block.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="chunk.h">

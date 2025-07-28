@@ -134,7 +134,7 @@
     <ClCompile Include="arr3_hash.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="block_types.h" />
+    <ClInclude Include="block.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="chunk.h" />
     <ClInclude Include="shader.h" />

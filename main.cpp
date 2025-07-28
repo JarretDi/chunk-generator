@@ -9,7 +9,7 @@
 
 #include "shader.h"
 #include "camera.h"
-#include "block_types.h"
+#include "block.h"
 #include "chunk.h"
 
 using glm::vec3;

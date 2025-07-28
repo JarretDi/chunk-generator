@@ -3,14 +3,13 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <cstring>   // for memset
-#include <algorithm> // for copy
+#include <algorithm> // for fill
+#include <memory>  // for unique ptr
 
 #include <vector>
-#include <array>
 #include <unordered_map>
 
-#include "block_types.h"
+#include "block.h"
 #include "arr3_hash.hpp"
 
 using std::vector;
@@ -23,14 +22,14 @@ has a world x, y (assuming no chunks stack on each other)
 contains 16 x 16 x 128 blocks 
 */
 
-constexpr int CHUNK_MAX_X = 16;
-constexpr int CHUNK_MAX_Y = 16;
-constexpr int CHUNK_MAX_Z = 128;
+static constexpr int CHUNK_MAX_X = 16;
+static constexpr int CHUNK_MAX_Y = 16;
+static constexpr int CHUNK_MAX_Z = 128;
 
 class Chunk
 {
 private:
-	BlockType blocks[CHUNK_MAX_X][CHUNK_MAX_Y][CHUNK_MAX_Z];
+	std::unique_ptr<BlockType[]> blocks;
 
 	unsigned int VAO, VBO, EBO;
 
@@ -48,6 +47,8 @@ private:
 
 public:
 	Chunk(int worldx = 0, int worldy = 0);
+
+	~Chunk();
 
 	void draw();
 

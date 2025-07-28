@@ -1,7 +1,8 @@
 #include "chunk.h"
 
 Chunk::Chunk(int worldx, int worldy) : worldx(worldx), worldy(worldy) {
-	std::memset(blocks, 1, sizeof(blocks));
+	blocks = std::make_unique<BlockType[]>(CHUNK_MAX_X * CHUNK_MAX_Y * CHUNK_MAX_Z);
+	std::fill(blocks.get(), blocks.get() + (CHUNK_MAX_X * CHUNK_MAX_Y * CHUNK_MAX_Z), BlockType::GRASS);
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -19,11 +20,17 @@ Chunk::Chunk(int worldx, int worldy) : worldx(worldx), worldy(worldy) {
 	updateMesh();
 }
 
+Chunk::~Chunk() {
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
+}
+
 BlockType Chunk::getBlock(vec3 coords) {
 	if (coords.x >= CHUNK_MAX_X || coords.y >= CHUNK_MAX_Y || coords.z >= CHUNK_MAX_Z ||
 		coords.x < 0 || coords.y < 0 || coords.z < 0) return BlockType::AIR;
 
-	return blocks[(int)coords.x][(int)coords.y][(int)coords.z];
+	return blocks[coords.x + CHUNK_MAX_X * (coords.y + CHUNK_MAX_Y * coords.z)];
 }
 
 void Chunk::draw() {
