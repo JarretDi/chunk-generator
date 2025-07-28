@@ -131,6 +131,7 @@
     <ClCompile Include="chunk.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="arr3_hash.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="block_types.h" />

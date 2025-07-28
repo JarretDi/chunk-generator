@@ -1,22 +1,26 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
+using glm::vec3;
+
 enum class BlockType {
 	AIR = 0,
 	GRASS = 1,
 	STONE = 2,
 };
 
-constexpr float cubeVertices[] = {
+const vec3 cubeVertices[] = {
 	// front face
-	0, 0, 1, // bottom left
-	0, 1, 1, // top left
-	1, 1, 1, // top right
-	1, 0, 1, // bottom right
+	{0, 0, 1}, // bottom left
+	{0, 1, 1}, // top left
+	{1, 1, 1}, // top right
+	{1, 0, 1}, // bottom right
 	// back face
-	0, 0, 0,
-	0, 1, 0,
-	1, 1, 0,
-	1, 0, 0,
+	{0, 0, 0},
+	{0, 1, 0},
+	{1, 1, 0},
+	{1, 0, 0},
 };
 
 constexpr int cubeIndices[] = {
