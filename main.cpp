@@ -90,7 +90,7 @@ int main() {
 	}
 
 	Shader blockShader("shader.vs", "shader.fs");
-	camera = Camera(vec3(0.0f, 16.0f, 3.0f));
+	camera = Camera(vec3(0.0f, CHUNK_MAX_Y / 16, 3.0f));
 
 	// setup our test chunk
 	Chunk chunk(0, 0);

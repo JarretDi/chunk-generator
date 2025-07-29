@@ -40,7 +40,6 @@ void Chunk::draw() {
 }
 
 void Chunk::updateMesh() {
-
 	meshVertices.clear();
 	meshIndices.clear();
 	unordered_map<vec3, int, vec3Hash> vertexToIndex;
@@ -154,7 +153,7 @@ void Chunk::addBlockVertex(vec3 coords, int index, unordered_map<vec3, int, vec3
 	}
 }
 
-void Chunk::generate(uint32_t seed) {
+void Chunk::generate(uint32_t seed, int octaves) {
 	// setup the random engine
 	if (seed == UINT32_MAX) {
 		std::random_device rd;
@@ -164,23 +163,23 @@ void Chunk::generate(uint32_t seed) {
 	std::mt19937 rng(seed);
 	std::uniform_real_distribution<float> dist(0.0, 2.0 * glm::pi<float>());
 
-	vec2 vecs[CHUNK_MAX_X + 1][CHUNK_MAX_Z + 1];
+	// note: this is a flattened 2d vector (of vectors, but a different one)
+	vector<vec2> noiseMap(INITIAL_FREQUENCY * INITIAL_FREQUENCY);
 
-	// give each block a unit vector
-	for (int x = 0; x <= CHUNK_MAX_X; x++) {
-		for (int z = 0; z <= CHUNK_MAX_Z; z++) {
+	// give each noise vertex a unit vector
+	for (int x = 0; x < INITIAL_FREQUENCY; x++) {
+		for (int z = 0; z < INITIAL_FREQUENCY; z++) {
 			float angle = dist(rng);
-			vecs[x][z] = vec2(sin(angle), cos(angle));
+			noiseMap[x + INITIAL_FREQUENCY * z] = vec2(sin(angle), cos(angle));
 		}
 	}
 
 	// go through again and assign a height offset
-	vec2 offset = { 0.5, 0.5 };
-	int offsets[CHUNK_MAX_X][CHUNK_MAX_Z];
+	vector<int> offsets(CHUNK_MAX_X * CHUNK_MAX_Z);
 
 	for (int x = 0; x < CHUNK_MAX_X; x++) {
 		for (int z = 0; z < CHUNK_MAX_Z; z++) {
-			vec2 samplePoint = vec2(x, z) + offset;
+			vec2 samplePoint = 0.0625f * vec2(x, z);
 
 			// get the four corners
 			int x0 = floor(samplePoint.x);
@@ -195,28 +194,26 @@ void Chunk::generate(uint32_t seed) {
 				bl   br  */
 
 			// find the dot product between its displacement between corners and random vectors
-			float bl = glm::dot(samplePoint - vec2(x0, z0), vecs[x0][z0]);
-			float br = glm::dot(samplePoint - vec2(x1, z0), vecs[x1][z0]);
-			float ul = glm::dot(samplePoint - vec2(x0, z1), vecs[x0][z1]);
-			float ur = glm::dot(samplePoint - vec2(x1, z1), vecs[x1][z1]);
+			float bl = glm::dot(samplePoint - vec2(x0, z0), noiseMap[x0 + INITIAL_FREQUENCY * z0]);
+			float br = glm::dot(samplePoint - vec2(x1, z0), noiseMap[x1 + INITIAL_FREQUENCY * z0]);
+			float ul = glm::dot(samplePoint - vec2(x0, z1), noiseMap[x0 + INITIAL_FREQUENCY * z1]);
+			float ur = glm::dot(samplePoint - vec2(x1, z1), noiseMap[x1 + INITIAL_FREQUENCY * z1]);
 
 			// interpolate between them
-			float blerp = glm::mix(bl, br, offset.x);
-			float ulerp = glm::mix(ul, ur, offset.x);
+			float blerp = glm::mix(bl, br, samplePoint.x - floor(samplePoint.x));
+			float ulerp = glm::mix(ul, ur, samplePoint.x - floor(samplePoint.x));
 			
-			float bilerp = glm::mix(blerp, ulerp, offset.y);
-			int heightOffset = bilerp * 8;
-			offsets[x][z] = heightOffset;
-			//std::cout << offset << " ";
+			float bilerp = glm::mix(blerp, ulerp, samplePoint.y - floor(samplePoint.y));
+			int heightOffset = bilerp * 16;
+			offsets[x + CHUNK_MAX_X * z] = heightOffset;
 		}
-		//std::cout << std::endl;
 	}
 
 	// go through each (x, z) and set the height, using a baseline height
 	// then, fills air above each height, and grass below
 	for (int x = 0; x < CHUNK_MAX_X; x++) {
 		for (int z = 0; z < CHUNK_MAX_Z; z++) {
-			int height = HEIGHT_BASELINE + offsets[x][z];
+			int height = HEIGHT_BASELINE + offsets[x + CHUNK_MAX_X * z];
 
 			for (int y = 0; y < height; y++) {
 				blocks[x + CHUNK_MAX_X * (y + CHUNK_MAX_Y * z)] = BlockType::GRASS;

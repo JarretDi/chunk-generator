@@ -29,11 +29,15 @@ has a world x, y (assuming no chunks stack on each other)
 contains 16 x 128 x 16 blocks 
 */
 
-static constexpr int CHUNK_MAX_X = 256;
-static constexpr int CHUNK_MAX_Y = 16;
-static constexpr int CHUNK_MAX_Z = 256;
+static constexpr int CHUNK_MAX_X = 64;
+static constexpr int CHUNK_MAX_Y = 32;
+static constexpr int CHUNK_MAX_Z = 64;
 
 static constexpr int HEIGHT_BASELINE = CHUNK_MAX_Y / 2;
+
+// note: use the inverse of frequency for calculations
+static constexpr int INITIAL_FREQUENCY = 16;
+static constexpr int INITIAL_AMPLITUDE = 16;
 
 class Chunk
 {
