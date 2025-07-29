@@ -1,6 +1,6 @@
 #include "chunk.h"
 
-Chunk::Chunk(const vector<vec2>& noiseMap, int worldx, int worldy) : worldx(worldx), worldy(worldy) {
+Chunk::Chunk(const vector<vec2>& noiseMap, int worldx, int worldz) : worldx(worldx), worldz(worldz) {
 	blocks = std::make_unique<BlockType[]>(CHUNK_MAX_X * CHUNK_MAX_Y * CHUNK_MAX_Z);
 	generate(noiseMap, 4);
 
@@ -34,7 +34,7 @@ BlockType Chunk::getBlock(vec3 coords) {
 }
 
 vec3 Chunk::getCoords() {
-	return vec3(worldx, 0, worldy);
+	return vec3(worldx, 0, worldz);
 }
 
 void Chunk::draw() {
@@ -185,7 +185,7 @@ void Chunk::generate(const vector<vec2>& noiseMap, int octaves) {
 void Chunk::perlinNoise(float frequency, float amplitude, const vector<vec2>& noiseMap, vector<int>& offsets) {
 	for (int x = 0; x < CHUNK_MAX_X; x++) {
 		for (int z = 0; z < CHUNK_MAX_Z; z++) {
-			vec2 samplePoint = 1.0f / frequency * vec2(x, z);
+			vec2 samplePoint = 1.0f / frequency * (vec2(x, z) + vec2(worldx * CHUNK_MAX_X, worldz * CHUNK_MAX_Z));
 
 			// get the four corners
 			int x0 = floor(samplePoint.x);

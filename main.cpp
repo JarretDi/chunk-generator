@@ -93,7 +93,7 @@ int main() {
 	camera = Camera(vec3(0.0f, CHUNK_MAX_Y / 16, 3.0f));
 
 	// setup our test world
-	World world(0, 4);
+	World world(0, 16);
 
 	glEnable(GL_DEPTH_TEST);
 

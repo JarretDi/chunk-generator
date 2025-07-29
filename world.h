@@ -11,6 +11,8 @@
 
 using glm::vec2;
 
+static constexpr int NOISEMAP_SIZE = 64;
+
 class World
 {
 private:
@@ -23,7 +25,7 @@ private:
 	std::uniform_real_distribution<float> dist;
 
 public:
-	World(uint32_t seed, int numChunks = 16);
+	World(uint32_t seed, int numChunks = 4);
 
 	void draw(Shader & shader);
 };

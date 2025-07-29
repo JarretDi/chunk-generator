@@ -12,13 +12,13 @@ World::World(uint32_t seed, int numChunks) : seed(seed) {
 
 	// setup the noisemap
 	// note: this is a flattened 2d vector (of vectors, but a different one)
-	noiseMap = vector<vec2>(INITIAL_FREQUENCY * INITIAL_FREQUENCY);
+	noiseMap = vector<vec2>(NOISEMAP_SIZE * NOISEMAP_SIZE);
 
 	// give each noise vertex a unit vector
-	for (int x = 0; x < INITIAL_FREQUENCY; x++) {
-		for (int z = 0; z < INITIAL_FREQUENCY; z++) {
+	for (int x = 0; x < NOISEMAP_SIZE; x++) {
+		for (int z = 0; z < NOISEMAP_SIZE; z++) {
 			float angle = dist(rng);
-			noiseMap[x + INITIAL_FREQUENCY * z] = vec2(sin(angle), cos(angle));
+			noiseMap[x + NOISEMAP_SIZE * z] = vec2(sin(angle), cos(angle));
 		}
 	}
 

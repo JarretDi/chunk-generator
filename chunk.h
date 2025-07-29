@@ -29,15 +29,15 @@ has a world x, y (assuming no chunks stack on each other)
 contains 16 x 128 x 16 blocks 
 */
 
-static constexpr int CHUNK_MAX_X = 64;
-static constexpr int CHUNK_MAX_Y = 32;
-static constexpr int CHUNK_MAX_Z = 64;
+static constexpr int CHUNK_MAX_X = 16;
+static constexpr int CHUNK_MAX_Y = 64;
+static constexpr int CHUNK_MAX_Z = 16;
 
 static constexpr int HEIGHT_BASELINE = CHUNK_MAX_Y / 2;
 
 // note: use the inverse of frequency for calculations
-static constexpr int INITIAL_FREQUENCY = 32;
-static constexpr int INITIAL_AMPLITUDE = 16;
+static constexpr int INITIAL_FREQUENCY = 64;
+static constexpr int INITIAL_AMPLITUDE = 48;
 
 class Chunk
 {
@@ -46,7 +46,7 @@ private:
 
 	unsigned int VAO, VBO, EBO;
 
-	int worldx, worldy;
+	int worldx, worldz;
 
 	vector<vec3> meshVertices;
 
@@ -63,7 +63,7 @@ private:
 	void perlinNoise(float frequency, float amplitude, const vector<vec2> & noiseMap, vector<int> & offsets);
 
 public:
-	Chunk(const vector<vec2>& noiseMap, int worldx = 0, int worldy = 0);
+	Chunk(const vector<vec2>& noiseMap, int worldx = 0, int worldz = 0);
 
 	~Chunk();
 
