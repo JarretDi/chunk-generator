@@ -132,12 +132,14 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="arr3_hash.hpp" />
+    <ClCompile Include="world.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="block.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="chunk.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="world.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shader.fs" />

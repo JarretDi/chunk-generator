@@ -1,9 +1,8 @@
 #include "chunk.h"
 
-Chunk::Chunk(int worldx, int worldy) : worldx(worldx), worldy(worldy) {
+Chunk::Chunk(const vector<vec2>& noiseMap, int worldx, int worldy) : worldx(worldx), worldy(worldy) {
 	blocks = std::make_unique<BlockType[]>(CHUNK_MAX_X * CHUNK_MAX_Y * CHUNK_MAX_Z);
-	generate(0, 4);
-	//std::fill(blocks.get(), blocks.get() + (CHUNK_MAX_X * CHUNK_MAX_Y * CHUNK_MAX_Z), BlockType::GRASS);
+	generate(noiseMap, 4);
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -32,6 +31,10 @@ BlockType Chunk::getBlock(vec3 coords) {
 		coords.x < 0 || coords.y < 0 || coords.z < 0) return BlockType::AIR;
 
 	return blocks[coords.x + CHUNK_MAX_X * (coords.y + CHUNK_MAX_Y * coords.z)];
+}
+
+vec3 Chunk::getCoords() {
+	return vec3(worldx, 0, worldy);
 }
 
 void Chunk::draw() {
@@ -153,27 +156,7 @@ void Chunk::addBlockVertex(vec3 coords, int index, unordered_map<vec3, int, vec3
 	}
 }
 
-void Chunk::generate(uint32_t seed, int octaves) {
-	// setup the random engine
-	if (seed == UINT32_MAX) {
-		std::random_device rd;
-		seed = rd();
-	}
-
-	std::mt19937 rng(seed);
-	std::uniform_real_distribution<float> dist(0.0, 2.0 * glm::pi<float>());
-
-	// note: this is a flattened 2d vector (of vectors, but a different one)
-	vector<vec2> noiseMap(INITIAL_FREQUENCY * INITIAL_FREQUENCY);
-
-	// give each noise vertex a unit vector
-	for (int x = 0; x < INITIAL_FREQUENCY; x++) {
-		for (int z = 0; z < INITIAL_FREQUENCY; z++) {
-			float angle = dist(rng);
-			noiseMap[x + INITIAL_FREQUENCY * z] = vec2(sin(angle), cos(angle));
-		}
-	}
-
+void Chunk::generate(const vector<vec2>& noiseMap, int octaves) {
 	// go through again and assign a height offset
 	vector<int> offsets(CHUNK_MAX_X * CHUNK_MAX_Z);
 

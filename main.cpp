@@ -10,7 +10,7 @@
 #include "shader.h"
 #include "camera.h"
 #include "block.h"
-#include "chunk.h"
+#include "world.h"
 
 using glm::vec3;
 using glm::mat4;
@@ -92,8 +92,8 @@ int main() {
 	Shader blockShader("shader.vs", "shader.fs");
 	camera = Camera(vec3(0.0f, CHUNK_MAX_Y / 16, 3.0f));
 
-	// setup our test chunk
-	Chunk chunk(0, 0);
+	// setup our test world
+	World world(0, 4);
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -118,11 +118,11 @@ int main() {
 
 		blockShader.setVec3("vertexColour", vec3(0.25, 0.75, 0.4));
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		chunk.draw();
+		world.draw(blockShader);
 
 		blockShader.setVec3("vertexColour", vec3(0));
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		chunk.draw();
+		world.draw(blockShader);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

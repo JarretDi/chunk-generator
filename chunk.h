@@ -36,7 +36,7 @@ static constexpr int CHUNK_MAX_Z = 64;
 static constexpr int HEIGHT_BASELINE = CHUNK_MAX_Y / 2;
 
 // note: use the inverse of frequency for calculations
-static constexpr int INITIAL_FREQUENCY = 64;
+static constexpr int INITIAL_FREQUENCY = 32;
 static constexpr int INITIAL_AMPLITUDE = 16;
 
 class Chunk
@@ -58,17 +58,21 @@ private:
 
 	void addBlockVertex(vec3 coords, int index, unordered_map<vec3, int, vec3Hash>& vertexToIndex);
 
-	void generate(uint32_t seed = UINT32_MAX, int octaves = 1);
+	void generate(const vector<vec2>& noiseMap, int octaves = 1);
 
 	void perlinNoise(float frequency, float amplitude, const vector<vec2> & noiseMap, vector<int> & offsets);
 
 public:
-	Chunk(int worldx = 0, int worldy = 0);
+	Chunk(const vector<vec2>& noiseMap, int worldx = 0, int worldy = 0);
 
 	~Chunk();
 
 	void draw();
 
 	BlockType getBlock(vec3 coords);
-};
 
+	vec3 getCoords();
+
+	Chunk(Chunk&&) noexcept = default;
+	Chunk& operator=(Chunk&&) noexcept = default;
+};

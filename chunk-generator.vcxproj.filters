@@ -27,6 +27,9 @@
     <ClCompile Include="arr3_hash.hpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="world.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader.h">
@@ -39,6 +42,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="chunk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="world.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
