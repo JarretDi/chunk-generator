@@ -128,8 +128,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\glad.c" />
     <ClCompile Include="chunk-generator\chunk.cpp" />
-    <ClCompile Include="chunk-generator\glad.c" />
     <ClCompile Include="chunk-generator\main.cpp" />
     <ClCompile Include="chunk-generator\world.cpp" />
   </ItemGroup>
