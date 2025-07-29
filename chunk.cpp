@@ -2,7 +2,7 @@
 
 Chunk::Chunk(int worldx, int worldy) : worldx(worldx), worldy(worldy) {
 	blocks = std::make_unique<BlockType[]>(CHUNK_MAX_X * CHUNK_MAX_Y * CHUNK_MAX_Z);
-	generate(0);
+	generate(0, 4);
 	//std::fill(blocks.get(), blocks.get() + (CHUNK_MAX_X * CHUNK_MAX_Y * CHUNK_MAX_Z), BlockType::GRASS);
 
 	glGenVertexArrays(1, &VAO);
@@ -177,9 +177,32 @@ void Chunk::generate(uint32_t seed, int octaves) {
 	// go through again and assign a height offset
 	vector<int> offsets(CHUNK_MAX_X * CHUNK_MAX_Z);
 
+	float frequency = INITIAL_FREQUENCY;
+	int amplitude = INITIAL_AMPLITUDE;
+
+	for (int i = 0; i < octaves; i++) {
+		perlinNoise(frequency, amplitude, noiseMap, offsets);
+		frequency /= 2;
+		amplitude /= 2;
+	}
+
+	// go through each (x, z) and set the height, using a baseline height
+	// then, fills air above each height, and grass below
 	for (int x = 0; x < CHUNK_MAX_X; x++) {
 		for (int z = 0; z < CHUNK_MAX_Z; z++) {
-			vec2 samplePoint = 0.0625f * vec2(x, z);
+			int height = HEIGHT_BASELINE + offsets[x + CHUNK_MAX_X * z];
+
+			for (int y = 0; y < height; y++) {
+				blocks[x + CHUNK_MAX_X * (y + CHUNK_MAX_Y * z)] = BlockType::GRASS;
+			}
+		}
+	}
+}
+
+void Chunk::perlinNoise(float frequency, float amplitude, const vector<vec2>& noiseMap, vector<int>& offsets) {
+	for (int x = 0; x < CHUNK_MAX_X; x++) {
+		for (int z = 0; z < CHUNK_MAX_Z; z++) {
+			vec2 samplePoint = 1.0f / frequency * vec2(x, z);
 
 			// get the four corners
 			int x0 = floor(samplePoint.x);
@@ -193,7 +216,7 @@ void Chunk::generate(uint32_t seed, int octaves) {
 				 +---+     --> x
 				bl   br  */
 
-			// find the dot product between its displacement between corners and random vectors
+				// find the dot product between its displacement between corners and random vectors
 			float bl = glm::dot(samplePoint - vec2(x0, z0), noiseMap[x0 + INITIAL_FREQUENCY * z0]);
 			float br = glm::dot(samplePoint - vec2(x1, z0), noiseMap[x1 + INITIAL_FREQUENCY * z0]);
 			float ul = glm::dot(samplePoint - vec2(x0, z1), noiseMap[x0 + INITIAL_FREQUENCY * z1]);
@@ -202,22 +225,10 @@ void Chunk::generate(uint32_t seed, int octaves) {
 			// interpolate between them
 			float blerp = glm::mix(bl, br, samplePoint.x - floor(samplePoint.x));
 			float ulerp = glm::mix(ul, ur, samplePoint.x - floor(samplePoint.x));
-			
+
 			float bilerp = glm::mix(blerp, ulerp, samplePoint.y - floor(samplePoint.y));
-			int heightOffset = bilerp * 16;
-			offsets[x + CHUNK_MAX_X * z] = heightOffset;
-		}
-	}
-
-	// go through each (x, z) and set the height, using a baseline height
-	// then, fills air above each height, and grass below
-	for (int x = 0; x < CHUNK_MAX_X; x++) {
-		for (int z = 0; z < CHUNK_MAX_Z; z++) {
-			int height = HEIGHT_BASELINE + offsets[x + CHUNK_MAX_X * z];
-
-			for (int y = 0; y < height; y++) {
-				blocks[x + CHUNK_MAX_X * (y + CHUNK_MAX_Y * z)] = BlockType::GRASS;
-			}
+			int heightOffset = bilerp * amplitude;
+			offsets[x + CHUNK_MAX_X * z] += heightOffset;
 		}
 	}
 }
