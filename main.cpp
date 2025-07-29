@@ -90,7 +90,7 @@ int main() {
 	}
 
 	Shader blockShader("shader.vs", "shader.fs");
-	camera = Camera(vec3(0.0f, 64.0f, 3.0f));
+	camera = Camera(vec3(0.0f, 16.0f, 3.0f));
 
 	// setup our test chunk
 	Chunk chunk(0, 0);
@@ -109,7 +109,7 @@ int main() {
 
 		blockShader.use();
 		mat4 model(1.0f);
-		//model = glm::rotate(model, (float)glm::radians(90.0), { 1, 0, 0 });
+		model = glm::scale(model, vec3(0.1));
 		mat4 view = camera.GetViewMatrix();
 		mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 		blockShader.setMat4("model", model);

@@ -2,9 +2,14 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
 
 #include <algorithm> // for fill
+#include <cmath>
+#include <iostream>
 #include <memory>  // for unique ptr
+#include <random>
 
 #include <unordered_map>
 #include <vector>
@@ -12,19 +17,23 @@
 #include "block.h"
 #include "arr3_hash.hpp"
 
-using std::vector;
-using std::array;
 using std::unordered_map;
+using std::vector;
+
+using glm::vec2;
+using glm::vec3;
 
 /*
 A representation of a chunk of blocks 
 has a world x, y (assuming no chunks stack on each other)
-contains 16 x 16 x 128 blocks 
+contains 16 x 128 x 16 blocks 
 */
 
-static constexpr int CHUNK_MAX_X = 16;
-static constexpr int CHUNK_MAX_Y = 128;
-static constexpr int CHUNK_MAX_Z = 16;
+static constexpr int CHUNK_MAX_X = 256;
+static constexpr int CHUNK_MAX_Y = 16;
+static constexpr int CHUNK_MAX_Z = 256;
+
+static constexpr int HEIGHT_BASELINE = CHUNK_MAX_Y / 2;
 
 class Chunk
 {
