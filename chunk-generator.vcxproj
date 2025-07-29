@@ -128,22 +128,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="chunk.cpp" />
-    <ClCompile Include="glad.c" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="arr3_hash.hpp" />
-    <ClCompile Include="world.cpp" />
+    <ClCompile Include="chunk-generator\chunk.cpp" />
+    <ClCompile Include="chunk-generator\glad.c" />
+    <ClCompile Include="chunk-generator\main.cpp" />
+    <ClCompile Include="chunk-generator\world.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="block.h" />
-    <ClInclude Include="camera.h" />
-    <ClInclude Include="chunk.h" />
-    <ClInclude Include="shader.h" />
-    <ClInclude Include="world.h" />
+    <ClInclude Include="chunk-generator\arr3_hash.hpp" />
+    <ClInclude Include="chunk-generator\block.h" />
+    <ClInclude Include="chunk-generator\camera.h" />
+    <ClInclude Include="chunk-generator\chunk.h" />
+    <ClInclude Include="chunk-generator\shader.h" />
+    <ClInclude Include="chunk-generator\world.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader.fs" />
-    <None Include="shader.vs" />
+    <None Include="chunk-generator\shader.fs" />
+    <None Include="chunk-generator\shader.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -89,7 +89,7 @@ int main() {
 		std::cout << e.what() << std::endl;
 	}
 
-	Shader blockShader("shader.vs", "shader.fs");
+	Shader blockShader("chunk-generator/shader.vs", "chunk-generator/shader.fs");
 	camera = Camera(vec3(0.0f, CHUNK_MAX_Y / 16, 3.0f));
 
 	// setup our test world
