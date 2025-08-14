@@ -47,6 +47,8 @@ private:
 
 	unsigned int VAO, VBO, EBO;
 
+	uint32_t seed;
+
 	int worldx, worldz;
 
 	vector<Vertex> meshVertices;
@@ -57,12 +59,14 @@ private:
 
 	void addFace(vec3 coords, int index);
 
-	void generate(const vector<vec2>& noiseMap, int octaves = 1);
+	void generate(int octaves = 1);
 
-	void perlinNoise(float frequency, float amplitude, const vector<vec2> & noiseMap, vector<int> & offsets);
+	void perlinNoise(float frequency, float amplitude, vector<int> & offsets);
+
+	vec2 noiseHash(uint32_t seed, int x, int z);
 
 public:
-	Chunk(const vector<vec2>& noiseMap, int worldx = 0, int worldz = 0);
+	Chunk(uint32_t seed, int worldx = 0, int worldz = 0);
 
 	~Chunk();
 
