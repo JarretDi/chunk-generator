@@ -140,6 +140,7 @@
     <ClInclude Include="chunk-generator\chunk.h" />
     <ClInclude Include="chunk-generator\shader.h" />
     <ClInclude Include="chunk-generator\world.h" />
+    <ClInclude Include="mesh.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="chunk-generator\shader.fs" />

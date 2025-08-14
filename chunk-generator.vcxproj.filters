@@ -47,6 +47,9 @@
     <ClInclude Include="chunk-generator\world.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="chunk-generator\shader.fs">

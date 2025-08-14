@@ -11,7 +11,7 @@
 
 using glm::vec2;
 
-static constexpr int NOISEMAP_SIZE = 64;
+static constexpr unsigned int long NOISEMAP_SIZE = 256;
 
 class World
 {

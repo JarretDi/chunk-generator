@@ -15,8 +15,8 @@ World::World(uint32_t seed, int numChunks) : seed(seed) {
 	noiseMap = vector<vec2>(NOISEMAP_SIZE * NOISEMAP_SIZE);
 
 	// give each noise vertex a unit vector
-	for (int x = 0; x < NOISEMAP_SIZE; x++) {
-		for (int z = 0; z < NOISEMAP_SIZE; z++) {
+	for (unsigned int long x = 0; x < NOISEMAP_SIZE; x++) {
+		for (unsigned int long z = 0; z < NOISEMAP_SIZE; z++) {
 			float angle = dist(rng);
 			noiseMap[x + NOISEMAP_SIZE * z] = vec2(sin(angle), cos(angle));
 		}

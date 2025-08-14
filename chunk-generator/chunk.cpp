@@ -2,7 +2,7 @@
 
 Chunk::Chunk(const vector<vec2>& noiseMap, int worldx, int worldz) : worldx(worldx), worldz(worldz) {
 	blocks = std::make_unique<BlockType[]>(CHUNK_MAX_X * CHUNK_MAX_Y * CHUNK_MAX_Z);
-	generate(noiseMap, 4);
+	generate(noiseMap, 6);
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -14,8 +14,14 @@ Chunk::Chunk(const vector<vec2>& noiseMap, int worldx, int worldz) : worldx(worl
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
+	glEnableVertexAttribArray(2);
 
 	updateMesh();
 }
@@ -39,120 +45,54 @@ vec3 Chunk::getCoords() {
 
 void Chunk::draw() {
 	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, meshIndices.size(), GL_UNSIGNED_INT, 0);
+	glDrawArrays(GL_TRIANGLES, 0, meshVertices.size());
 }
 
 void Chunk::updateMesh() {
 	meshVertices.clear();
-	meshIndices.clear();
-	unordered_map<vec3, int, vec3Hash> vertexToIndex;
 
 	int currentIndex = 0;
 
 	for (int x = 0; x < CHUNK_MAX_X; x++) {
 		for (int y = 0; y < CHUNK_MAX_Y; y++) {
 			for (int z = 0; z < CHUNK_MAX_Z; z++) {
-				addBlockMesh({ x, y, z }, vertexToIndex);
+				addBlockMesh({ x, y, z });
 			}
 		}
 	}
 
 	glBindVertexArray(VAO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * meshVertices.size(), meshVertices.data(), GL_STATIC_DRAW);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * meshIndices.size(), meshIndices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * meshVertices.size(), meshVertices.data(), GL_STATIC_DRAW);
 }
 
-void Chunk::addBlockMesh(vec3 coords, unordered_map<vec3, int, vec3Hash>& vertexToIndex) {
+void Chunk::addBlockMesh(vec3 coords) {
 	if (getBlock(coords) == BlockType::AIR) return;
 
 	// front face
-	if (getBlock(coords + vec3(0, 0, 1)) == BlockType::AIR) {
-		// first triangle
-		addBlockVertex(coords, 0, vertexToIndex); // these indexes come from cubeIndices
-		addBlockVertex(coords, 1, vertexToIndex);
-		addBlockVertex(coords, 2, vertexToIndex);
-
-		// second triangle
-		addBlockVertex(coords, 0, vertexToIndex);
-		addBlockVertex(coords, 2, vertexToIndex);
-		addBlockVertex(coords, 3, vertexToIndex);
-	}
+	if (getBlock(coords + vec3(0, 0, 1)) == BlockType::AIR) addFace(coords, 0);
 
 	// top face
-	if (getBlock(coords + vec3(0, 1, 0)) == BlockType::AIR) {
-		// first triangle
-		addBlockVertex(coords, 1, vertexToIndex);
-		addBlockVertex(coords, 5, vertexToIndex);
-		addBlockVertex(coords, 6, vertexToIndex);
-
-		// second triangle
-		addBlockVertex(coords, 1, vertexToIndex);
-		addBlockVertex(coords, 6, vertexToIndex);
-		addBlockVertex(coords, 2, vertexToIndex);
-	}
+	if (getBlock(coords + vec3(0, 1, 0)) == BlockType::AIR) addFace(coords, 1);
 
 	// right face
-	if (getBlock(coords + vec3(1, 0, 0)) == BlockType::AIR) {
-		// first triangle
-		addBlockVertex(coords, 2, vertexToIndex);
-		addBlockVertex(coords, 3, vertexToIndex);
-		addBlockVertex(coords, 7, vertexToIndex);
-
-		// second triangle
-		addBlockVertex(coords, 2, vertexToIndex);
-		addBlockVertex(coords, 7, vertexToIndex);
-		addBlockVertex(coords, 6, vertexToIndex);
-	}
+	if (getBlock(coords + vec3(1, 0, 0)) == BlockType::AIR) addFace(coords, 2);
 
 	// bottom face
-	if (getBlock(coords + vec3(0, -1, 0)) == BlockType::AIR) {
-		// first triangle
-		addBlockVertex(coords, 0, vertexToIndex);
-		addBlockVertex(coords, 4, vertexToIndex);
-		addBlockVertex(coords, 7, vertexToIndex);
-
-		// second triangle
-		addBlockVertex(coords, 0, vertexToIndex);
-		addBlockVertex(coords, 7, vertexToIndex);
-		addBlockVertex(coords, 3, vertexToIndex);
-	}
+	if (getBlock(coords + vec3(0, -1, 0)) == BlockType::AIR) addFace(coords, 3);
 
 	// left face
-	if (getBlock(coords + vec3(-1, 0, 0)) == BlockType::AIR) {
-		// first triangle
-		addBlockVertex(coords, 0, vertexToIndex);
-		addBlockVertex(coords, 1, vertexToIndex);
-		addBlockVertex(coords, 5, vertexToIndex);
-
-		// second triangle
-		addBlockVertex(coords, 0, vertexToIndex);
-		addBlockVertex(coords, 5, vertexToIndex);
-		addBlockVertex(coords, 4, vertexToIndex);
-	}
+	if (getBlock(coords + vec3(-1, 0, 0)) == BlockType::AIR) addFace(coords, 4);
 
 	// back face
-	if (getBlock(coords + vec3(0, 0, -1)) == BlockType::AIR) {
-		// first triangle
-		addBlockVertex(coords, 4, vertexToIndex);
-		addBlockVertex(coords, 5, vertexToIndex);
-		addBlockVertex(coords, 6, vertexToIndex);
-
-		// second triangle
-		addBlockVertex(coords, 4, vertexToIndex);
-		addBlockVertex(coords, 6, vertexToIndex);
-		addBlockVertex(coords, 7, vertexToIndex);
-	}
+	if (getBlock(coords + vec3(0, 0, -1)) == BlockType::AIR) addFace(coords, 5);
 }
 
-void Chunk::addBlockVertex(vec3 coords, int index, unordered_map<vec3, int, vec3Hash>& vertexToIndex) {
-	vec3 vertex = cubeVertices[index] + coords;
-	if (vertexToIndex.find(vertex) == vertexToIndex.end()) {
+void Chunk::addFace(vec3 coords, int index) {
+	int start = index * 6;
+	for (int i = 0; i < 6; i++) {
+		Vertex vertex = cubeVertices[start + i];
+		vertex.coords += coords;
 		meshVertices.push_back(vertex);
-		meshIndices.push_back(meshVertices.size() - 1);
-		vertexToIndex[vertex] = meshVertices.size() - 1;
-	}
-	else {
-		meshIndices.push_back(vertexToIndex[vertex]);
 	}
 }
 
@@ -188,10 +128,10 @@ void Chunk::perlinNoise(float frequency, float amplitude, const vector<vec2>& no
 			vec2 samplePoint = 1.0f / frequency * (vec2(x, z) + vec2(worldx * CHUNK_MAX_X, worldz * CHUNK_MAX_Z));
 
 			// get the four corners
-			int x0 = floor(samplePoint.x);
-			int x1 = x0 + 1;
-			int z0 = floor(samplePoint.y);
-			int z1 = z0 + 1;
+			unsigned long x0 = floor(samplePoint.x);
+			unsigned long x1 = x0 + 1;
+			unsigned long z0 = floor(samplePoint.y);
+			unsigned long z1 = z0 + 1;
 
 			/*	ul   ur
 				 +---+    ^ z
@@ -204,12 +144,12 @@ void Chunk::perlinNoise(float frequency, float amplitude, const vector<vec2>& no
 			float br = glm::dot(samplePoint - vec2(x1, z0), noiseMap[x1 + INITIAL_FREQUENCY * z0]);
 			float ul = glm::dot(samplePoint - vec2(x0, z1), noiseMap[x0 + INITIAL_FREQUENCY * z1]);
 			float ur = glm::dot(samplePoint - vec2(x1, z1), noiseMap[x1 + INITIAL_FREQUENCY * z1]);
-
+			
 			// interpolate between them
-			float blerp = glm::mix(bl, br, samplePoint.x - floor(samplePoint.x));
-			float ulerp = glm::mix(ul, ur, samplePoint.x - floor(samplePoint.x));
+			float blerp = glm::mix(bl, br, glm::fract(samplePoint.x));
+			float ulerp = glm::mix(ul, ur, glm::fract(samplePoint.x));
 
-			float bilerp = glm::mix(blerp, ulerp, samplePoint.y - floor(samplePoint.y));
+			float bilerp = glm::mix(blerp, ulerp, glm::fract(samplePoint.y));
 			int heightOffset = bilerp * amplitude;
 			offsets[x + CHUNK_MAX_X * z] += heightOffset;
 		}

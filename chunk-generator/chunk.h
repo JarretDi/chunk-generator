@@ -16,6 +16,7 @@
 
 #include "block.h"
 #include "arr3_hash.hpp"
+#include "../mesh.h"
 
 using std::unordered_map;
 using std::vector;
@@ -48,15 +49,13 @@ private:
 
 	int worldx, worldz;
 
-	vector<vec3> meshVertices;
-
-	vector<int> meshIndices;
+	vector<Vertex> meshVertices;
 
 	void updateMesh();
 
-	void addBlockMesh(vec3 coords, unordered_map<vec3, int, vec3Hash> & vertexToIndex);
+	void addBlockMesh(vec3 coords);
 
-	void addBlockVertex(vec3 coords, int index, unordered_map<vec3, int, vec3Hash>& vertexToIndex);
+	void addFace(vec3 coords, int index);
 
 	void generate(const vector<vec2>& noiseMap, int octaves = 1);
 

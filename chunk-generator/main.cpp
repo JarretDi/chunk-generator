@@ -120,7 +120,7 @@ int main() {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		world.draw(blockShader);
 
-		blockShader.setVec3("vertexColour", vec3(0));
+		blockShader.setVec3("vertexColour", vec3(0.1, 0.6, 0.3));
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		world.draw(blockShader);
 
