@@ -97,13 +97,16 @@ int main() {
 
 	glEnable(GL_DEPTH_TEST);
 
+	std::cout << "Worldsize:" << sizeof(World) << std::endl;
+	std::cout << "Chunksize:" << sizeof(Chunk) << std::endl;
+
 	while (!glfwWindowShouldClose(window)) {
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
 		process_input(window);
-		
+
 		glClearColor(0.3, 0.75, 0.85, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -116,13 +119,15 @@ int main() {
 		blockShader.setMat4("view", view);
 		blockShader.setMat4("projection", projection);
 
+		glm::vec2 playerChunk = {floor(camera.Position.x / CHUNK_MAX_X * 10), floor(camera.Position.z / CHUNK_MAX_Z * 10)};
+
 		blockShader.setVec3("vertexColour", vec3(0.25, 0.75, 0.4));
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		world.draw(blockShader);
+		world.draw(blockShader, playerChunk);
 
 		blockShader.setVec3("vertexColour", vec3(0.1, 0.6, 0.3));
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		world.draw(blockShader);
+		world.draw(blockShader, playerChunk);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

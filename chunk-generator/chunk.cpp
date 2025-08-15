@@ -2,17 +2,14 @@
 
 Chunk::Chunk(uint32_t seed, int worldx, int worldz) : seed(seed), worldx(worldx), worldz(worldz) {
 	blocks = std::make_unique<BlockType[]>(CHUNK_MAX_X * CHUNK_MAX_Y * CHUNK_MAX_Z);
-	generate(6);
+	generate(6); // for perlin noise
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
 
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -24,32 +21,33 @@ Chunk::Chunk(uint32_t seed, int worldx, int worldz) : seed(seed), worldx(worldx)
 	glEnableVertexAttribArray(2);
 
 	updateMesh();
+	glBindVertexArray(0);
 }
 
 Chunk::~Chunk() {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
 }
 
-BlockType Chunk::getBlock(vec3 coords) {
+BlockType Chunk::getBlock(vec3 coords) const {
 	if (coords.x >= CHUNK_MAX_X || coords.y >= CHUNK_MAX_Y || coords.z >= CHUNK_MAX_Z ||
 		coords.x < 0 || coords.y < 0 || coords.z < 0) return BlockType::AIR;
 
 	return blocks[coords.x + CHUNK_MAX_X * (coords.y + CHUNK_MAX_Y * coords.z)];
 }
 
-vec3 Chunk::getCoords() {
+vec3 Chunk::getModelCoords() const {
 	return vec3(worldx, 0, worldz);
 }
 
-void Chunk::draw() {
+void Chunk::draw() const {
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, meshVertices.size());
 }
 
 void Chunk::updateMesh() {
 	meshVertices.clear();
+	meshVertices.reserve(CHUNK_MAX_X * CHUNK_MAX_Y * CHUNK_MAX_Z * 6 * 4 / 2);
 
 	int currentIndex = 0;
 
@@ -63,6 +61,7 @@ void Chunk::updateMesh() {
 
 	glBindVertexArray(VAO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * meshVertices.size(), meshVertices.data(), GL_STATIC_DRAW);
+	glBindVertexArray(0);
 }
 
 void Chunk::addBlockMesh(vec3 coords) {

@@ -29,7 +29,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="chunk-generator\arr3_hash.hpp">
+    <ClInclude Include="chunk-generator\vecn_hash.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="chunk-generator\block.h">

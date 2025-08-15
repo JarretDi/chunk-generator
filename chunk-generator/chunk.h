@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "block.h"
-#include "arr3_hash.hpp"
 #include "../mesh.h"
 
 using std::unordered_map;
@@ -45,7 +44,7 @@ class Chunk
 private:
 	std::unique_ptr<BlockType[]> blocks;
 
-	unsigned int VAO, VBO, EBO;
+	unsigned int VAO, VBO;
 
 	uint32_t seed;
 
@@ -70,11 +69,11 @@ public:
 
 	~Chunk();
 
-	void draw();
+	void draw() const;
 
-	BlockType getBlock(vec3 coords);
+	BlockType getBlock(vec3 coords) const;
 
-	vec3 getCoords();
+	vec3 getModelCoords() const;
 
 	Chunk(Chunk&&) noexcept = default;
 	Chunk& operator=(Chunk&&) noexcept = default;
