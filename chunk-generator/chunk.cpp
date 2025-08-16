@@ -29,15 +29,15 @@ Chunk::~Chunk() {
 	glDeleteBuffers(1, &VBO);
 }
 
-BlockType Chunk::getBlock(vec3 coords) const {
+BlockType Chunk::getBlock(ivec3 coords) const {
 	if (coords.x >= CHUNK_MAX_X || coords.y >= CHUNK_MAX_Y || coords.z >= CHUNK_MAX_Z ||
 		coords.x < 0 || coords.y < 0 || coords.z < 0) return BlockType::AIR;
 
 	return blocks[coords.x + CHUNK_MAX_X * (coords.y + CHUNK_MAX_Y * coords.z)];
 }
 
-vec3 Chunk::getModelCoords() const {
-	return vec3(worldx, 0, worldz);
+ivec3 Chunk::getModelCoords() const {
+	return ivec3(worldx, 0, worldz);
 }
 
 void Chunk::draw() const {
@@ -64,29 +64,29 @@ void Chunk::updateMesh() {
 	glBindVertexArray(0);
 }
 
-void Chunk::addBlockMesh(vec3 coords) {
+void Chunk::addBlockMesh(ivec3 coords) {
 	if (getBlock(coords) == BlockType::AIR) return;
 
 	// front face
-	if (getBlock(coords + vec3(0, 0, 1)) == BlockType::AIR) addFace(coords, 0);
+	if (getBlock(coords + ivec3(0, 0, 1)) == BlockType::AIR) addFace(coords, 0);
 
 	// top face
-	if (getBlock(coords + vec3(0, 1, 0)) == BlockType::AIR) addFace(coords, 1);
+	if (getBlock(coords + ivec3(0, 1, 0)) == BlockType::AIR) addFace(coords, 1);
 
 	// right face
-	if (getBlock(coords + vec3(1, 0, 0)) == BlockType::AIR) addFace(coords, 2);
+	if (getBlock(coords + ivec3(1, 0, 0)) == BlockType::AIR) addFace(coords, 2);
 
 	// bottom face
-	if (getBlock(coords + vec3(0, -1, 0)) == BlockType::AIR) addFace(coords, 3);
+	if (getBlock(coords + ivec3(0, -1, 0)) == BlockType::AIR) addFace(coords, 3);
 
 	// left face
-	if (getBlock(coords + vec3(-1, 0, 0)) == BlockType::AIR) addFace(coords, 4);
+	if (getBlock(coords + ivec3(-1, 0, 0)) == BlockType::AIR) addFace(coords, 4);
 
 	// back face
-	if (getBlock(coords + vec3(0, 0, -1)) == BlockType::AIR) addFace(coords, 5);
+	if (getBlock(coords + ivec3(0, 0, -1)) == BlockType::AIR) addFace(coords, 5);
 }
 
-void Chunk::addFace(vec3 coords, int index) {
+void Chunk::addFace(ivec3 coords, int index) {
 	int start = index * 6;
 	for (int i = 0; i < 6; i++) {
 		Vertex vertex = cubeVertices[start + i];

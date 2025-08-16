@@ -13,20 +13,32 @@ World::World(uint32_t seed, int renderDistance) : seed(seed) {
 	}
 }
 
-void World::loadChunks(glm::vec2 playerChunk) {
+void World::loadChunks(glm::ivec2 playerChunk) {
 	for (int x = playerChunk.x - RENDER_DISTANCE; x <= playerChunk.x + RENDER_DISTANCE; x++) {
 		for (int z = playerChunk.y - RENDER_DISTANCE; z <= playerChunk.y + RENDER_DISTANCE; z++) {
 			if (x < 0 || z < 0) continue;
 			glm::vec2 coords(x, z);
 			auto it = chunks.find(coords);
 			if (it == chunks.end()) {
-				chunks.emplace(vec2(x, z), std::make_unique<Chunk>(seed, x, z));
+				float dist = glm::distance((glm::vec2)playerChunk, coords);
+				toLoad.push({coords, dist});
 			}
 		}
 	}
 }
 
-const void World::draw(Shader & shader, glm::vec2 playerChunk) {
+void World::update() {
+	for (int i = 0; i < 3; i++) {
+		if (toLoad.empty()) return;
+		vec2 loadNow = toLoad.top().coords;
+		toLoad.pop();
+
+		if (chunks.find(loadNow) == chunks.end())
+			chunks.emplace(loadNow, std::make_unique<Chunk>(seed, loadNow.x, loadNow.y));
+	}
+}
+
+const void World::draw(Shader & shader, glm::ivec2 playerChunk) {
 	shader.use();
 	for (const auto& entry : chunks) {
 		const auto& coords = entry.first;

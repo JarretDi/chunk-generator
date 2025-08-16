@@ -22,6 +22,7 @@ using std::vector;
 
 using glm::vec2;
 using glm::vec3;
+using glm::ivec3;
 
 /*
 A representation of a chunk of blocks 
@@ -54,9 +55,9 @@ private:
 
 	void updateMesh();
 
-	void addBlockMesh(vec3 coords);
+	void addBlockMesh(ivec3 coords);
 
-	void addFace(vec3 coords, int index);
+	void addFace(ivec3 coords, int index);
 
 	void generate(int octaves = 1);
 
@@ -71,9 +72,9 @@ public:
 
 	void draw() const;
 
-	BlockType getBlock(vec3 coords) const;
+	BlockType getBlock(ivec3 coords) const;
 
-	vec3 getModelCoords() const;
+	ivec3 getModelCoords() const;
 
 	Chunk(Chunk&&) noexcept = default;
 	Chunk& operator=(Chunk&&) noexcept = default;

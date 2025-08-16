@@ -115,6 +115,8 @@ int main() {
 
 		process_input(window);
 
+		world.update();
+
 		glClearColor(0.3, 0.75, 0.85, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
