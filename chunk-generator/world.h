@@ -13,7 +13,7 @@
 
 using glm::vec2;
 
-static constexpr int renderDistance = 16;
+static constexpr int RENDER_DISTANCE = 16;
 
 class World
 {
@@ -22,7 +22,13 @@ private:
 	unordered_map<vec2, std::unique_ptr<Chunk>, vec2Hash> chunks;
 
 public:
+	World() : seed(seed) {
+
+	}
+
 	World(uint32_t seed, int numChunks = 4);
+
+	void loadChunks(glm::vec2 playerChunk);
 
 	const void draw(Shader & shader, glm::vec2 playerChunk);
 };

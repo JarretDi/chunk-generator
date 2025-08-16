@@ -6,7 +6,7 @@
 
 using glm::vec3;
 
-enum class BlockType {
+enum class BlockType : uint8_t {
 	AIR = 0,
 	GRASS = 1,
 	STONE = 2,

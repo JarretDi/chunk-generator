@@ -37,12 +37,12 @@ static constexpr int HEIGHT_BASELINE = CHUNK_MAX_Y / 2;
 
 // note: use the inverse of frequency for calculations
 static constexpr int INITIAL_FREQUENCY = 64;
-static constexpr int INITIAL_AMPLITUDE = 48;
+static constexpr int INITIAL_AMPLITUDE = 32;
 
 class Chunk
 {
 private:
-	std::unique_ptr<BlockType[]> blocks;
+	vector<BlockType> blocks;
 
 	unsigned int VAO, VBO;
 

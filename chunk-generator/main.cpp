@@ -20,6 +20,7 @@ constexpr int HEIGHT = 1200;
 
 GLFWwindow * window;
 Camera camera;
+World world;
 
 void frame_buffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
@@ -32,17 +33,26 @@ void process_input(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
 	}
+
+	bool hasMoved = false;
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		camera.ProcessKeyboard(FORWARD, deltaTime);
+		hasMoved = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 		camera.ProcessKeyboard(LEFT, deltaTime);
+		hasMoved = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 		camera.ProcessKeyboard(BACKWARD, deltaTime);
+		hasMoved = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		camera.ProcessKeyboard(RIGHT, deltaTime);
+		hasMoved = true;
+	}
+	if (hasMoved) {
+		world.loadChunks({ floor(camera.Position.x / CHUNK_MAX_X * 10), floor(camera.Position.z / CHUNK_MAX_Z * 10) });
 	}
 }
 
@@ -91,9 +101,7 @@ int main() {
 
 	Shader blockShader("chunk-generator/shader.vs", "chunk-generator/shader.fs");
 	camera = Camera(vec3(0.0f, CHUNK_MAX_Y / 16, 3.0f));
-
-	// setup our test world
-	World world(0, 16);
+	world = World(0, 16);
 
 	glEnable(GL_DEPTH_TEST);
 

@@ -1,7 +1,7 @@
 #include "chunk.h"
 
 Chunk::Chunk(uint32_t seed, int worldx, int worldz) : seed(seed), worldx(worldx), worldz(worldz) {
-	blocks = std::make_unique<BlockType[]>(CHUNK_MAX_X * CHUNK_MAX_Y * CHUNK_MAX_Z);
+	blocks.resize(CHUNK_MAX_X * CHUNK_MAX_Y * CHUNK_MAX_Z);
 	generate(6); // for perlin noise
 
 	glGenVertexArrays(1, &VAO);
