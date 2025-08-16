@@ -151,6 +151,8 @@ int main() {
 	std::cout << "Worldsize:" << sizeof(World) << std::endl;
 	std::cout << "Chunksize:" << sizeof(Chunk) << std::endl;
 
+	glm::vec3 lightColour(1.0f);
+
 	while (!glfwWindowShouldClose(window)) {
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
@@ -174,12 +176,23 @@ int main() {
 
 		glm::vec2 playerChunk = {floor(camera.Position.x / CHUNK_MAX_X * 10), floor(camera.Position.z / CHUNK_MAX_Z * 10)};
 
-		blockShader.setVec3("vertexColour", vec3(0.25, 0.75, 0.4));
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		world.draw(blockShader, playerChunk);
+		blockShader.setVec3("lightColour", lightColour);
+		blockShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
+		blockShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
+		blockShader.setVec3("material.specular", vec3(0.1f));
+		blockShader.setFloat("material.shininess", 128.0f);
 
-		blockShader.setVec3("vertexColour", vec3(0.1, 0.6, 0.3));
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glm::vec3 ambientColor = lightColour * glm::vec3(0.2f);
+		glm::vec3 diffuseColor = lightColour * glm::vec3(0.5f);
+		glm::vec3 specularColour = glm::vec3(1.0f);
+
+		glm::vec3 lightDir = glm::normalize(view * glm::vec4(cos(glfwGetTime() / 2), sin(glfwGetTime() / 2), 0.2f, 0.0f));
+		blockShader.setVec3("light.ambient", ambientColor);
+		blockShader.setVec3("light.diffuse", diffuseColor);
+		blockShader.setVec3("light.specular", specularColour);
+		blockShader.setVec3("light.direction", lightDir);
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		world.draw(blockShader, playerChunk);
 
 		glfwSwapBuffers(window);
