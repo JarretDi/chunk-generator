@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "block.h"
-#include "../mesh.h"
+#include "mesh.h"
 
 using std::unordered_map;
 using std::vector;

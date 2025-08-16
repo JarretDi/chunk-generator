@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "chunk-generator/shader.h"
+#include "shader.h"
 
 using std::string;
 using std::vector;

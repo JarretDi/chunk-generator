@@ -88,9 +88,11 @@ void Chunk::addBlockMesh(ivec3 coords) {
 
 void Chunk::addFace(ivec3 coords, int index) {
 	int start = index * 6;
+
 	for (int i = 0; i < 6; i++) {
 		Vertex vertex = cubeVertices[start + i];
 		vertex.coords += coords;
+		vertex.texCoords = glm::mat2(0, 1, -1, 0) * vertex.texCoords;
 		meshVertices.push_back(vertex);
 	}
 }
