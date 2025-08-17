@@ -67,23 +67,12 @@ void Chunk::updateMesh() {
 void Chunk::addBlockMesh(ivec3 coords) {
 	if (getBlock(coords) == BlockType::AIR) return;
 
-	// front face
-	if (getBlock(coords + ivec3(0, 0, 1)) == BlockType::AIR) addFace(coords, 0);
-
-	// top face
-	if (getBlock(coords + ivec3(0, 1, 0)) == BlockType::AIR) addFace(coords, 1);
-
-	// right face
-	if (getBlock(coords + ivec3(1, 0, 0)) == BlockType::AIR) addFace(coords, 2);
-
-	// bottom face
-	if (getBlock(coords + ivec3(0, -1, 0)) == BlockType::AIR) addFace(coords, 3);
-
-	// left face
-	if (getBlock(coords + ivec3(-1, 0, 0)) == BlockType::AIR) addFace(coords, 4);
-
-	// back face
-	if (getBlock(coords + ivec3(0, 0, -1)) == BlockType::AIR) addFace(coords, 5);
+	if (getBlock(coords + ivec3(0, 0, 1)) == BlockType::AIR) addFace(coords, 0); // front
+	if (getBlock(coords + ivec3(0, 0, -1)) == BlockType::AIR) addFace(coords, 1); // back
+	if (getBlock(coords + ivec3(-1, 0, 0)) == BlockType::AIR) addFace(coords, 2); // left
+	if (getBlock(coords + ivec3(1, 0, 0)) == BlockType::AIR) addFace(coords, 3); // right
+	if (getBlock(coords + ivec3(0, 1, 0)) == BlockType::AIR) addFace(coords, 4); // top
+	if (getBlock(coords + ivec3(0, -1, 0)) == BlockType::AIR) addFace(coords, 5); // bottom
 }
 
 void Chunk::addFace(ivec3 coords, int index) {
@@ -92,7 +81,6 @@ void Chunk::addFace(ivec3 coords, int index) {
 	for (int i = 0; i < 6; i++) {
 		Vertex vertex = cubeVertices[start + i];
 		vertex.coords += coords;
-		vertex.texCoords = glm::mat2(0, 1, -1, 0) * vertex.texCoords;
 		meshVertices.push_back(vertex);
 	}
 }

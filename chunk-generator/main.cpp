@@ -93,6 +93,9 @@ void initialize() {
 	glfwSetFramebufferSizeCallback(window, &frame_buffer_size_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window, &process_mouse_movement);
+
+	glEnable(GL_CULL_FACE);
+	//glCullFace(GL_FRONT); 
 }
 
 unsigned int loadTexture(char const * path) {
