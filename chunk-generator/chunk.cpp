@@ -117,10 +117,10 @@ void Chunk::perlinNoise(float frequency, float amplitude, vector<int>& offsets) 
 			vec2 samplePoint = 1.0f / frequency * (vec2(x, z) + vec2(worldx * CHUNK_MAX_X, worldz * CHUNK_MAX_Z));
 
 			// get the four corners
-			unsigned long x0 = floor(samplePoint.x);
-			unsigned long x1 = x0 + 1;
-			unsigned long z0 = floor(samplePoint.y);
-			unsigned long z1 = z0 + 1;
+			long x0 = floor(samplePoint.x);
+			long x1 = x0 + 1;
+			long z0 = floor(samplePoint.y);
+			long z1 = z0 + 1;
 
 			/*	ul   ur
 				 +---+    ^ z

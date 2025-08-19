@@ -14,6 +14,7 @@
 #include "camera.h"
 #include "block.h"
 #include "world.h"
+#include "main.h"
 
 using glm::vec3;
 using glm::mat4;
@@ -95,10 +96,13 @@ void initialize() {
 	glfwSetCursorPosCallback(window, &process_mouse_movement);
 
 	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
 	//glCullFace(GL_FRONT); 
+
 }
 
 unsigned int loadTexture(char const * path) {
+	stbi_set_flip_vertically_on_load(true);
 	int width, height, nrChannels;
 	unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
 
@@ -135,6 +139,39 @@ unsigned int loadTexture(char const * path) {
 	return texture;
 }
 
+void draw(Shader& blockShader, glm::vec3& lightColour)
+{
+	blockShader.use();
+	mat4 model(1.0f);
+	model = glm::scale(model, vec3(0.1));
+	mat4 view = camera.GetViewMatrix();
+	mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+	blockShader.setMat4("model", model);
+	blockShader.setMat4("view", view);
+	blockShader.setMat4("projection", projection);
+
+	glm::vec2 playerChunk = { floor(camera.Position.x / CHUNK_MAX_X * 10), floor(camera.Position.z / CHUNK_MAX_Z * 10) };
+
+	blockShader.setVec3("lightColour", lightColour);
+	blockShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
+	blockShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
+	blockShader.setVec3("material.specular", vec3(0.1f));
+	blockShader.setFloat("material.shininess", 128.0f);
+
+	glm::vec3 ambientColor = lightColour * glm::vec3(0.2f);
+	glm::vec3 diffuseColor = lightColour * glm::vec3(0.5f);
+	glm::vec3 specularColour = glm::vec3(1.0f);
+
+	glm::vec3 lightDir = glm::normalize(view * glm::vec4(cos(glfwGetTime() / 2), sin(glfwGetTime() / 2), 0.2f, 0.0f));
+	blockShader.setVec3("light.ambient", ambientColor);
+	blockShader.setVec3("light.diffuse", diffuseColor);
+	blockShader.setVec3("light.specular", specularColour);
+	blockShader.setVec3("light.direction", lightDir);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	world.draw(blockShader, playerChunk);
+}
+
 int main() {
 	try {
 		initialize();
@@ -146,10 +183,8 @@ int main() {
 	camera = Camera(vec3(0.0f, CHUNK_MAX_Y / 16, 3.0f));
 	world = World(0, 16);
 
-	stbi_set_flip_vertically_on_load(true);
+	
 	unsigned int dirtTex = loadTexture("grass.png");
-
-	glEnable(GL_DEPTH_TEST);
 
 	std::cout << "Worldsize:" << sizeof(World) << std::endl;
 	std::cout << "Chunksize:" << sizeof(Chunk) << std::endl;
@@ -163,40 +198,12 @@ int main() {
 
 		process_input(window);
 
-		world.update();
-
 		glClearColor(0.3, 0.75, 0.85, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		blockShader.use();
-		mat4 model(1.0f);
-		model = glm::scale(model, vec3(0.1));
-		mat4 view = camera.GetViewMatrix();
-		mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
-		blockShader.setMat4("model", model);
-		blockShader.setMat4("view", view);
-		blockShader.setMat4("projection", projection);
+		world.update();
 
-		glm::vec2 playerChunk = {floor(camera.Position.x / CHUNK_MAX_X * 10), floor(camera.Position.z / CHUNK_MAX_Z * 10)};
-
-		blockShader.setVec3("lightColour", lightColour);
-		blockShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
-		blockShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
-		blockShader.setVec3("material.specular", vec3(0.1f));
-		blockShader.setFloat("material.shininess", 128.0f);
-
-		glm::vec3 ambientColor = lightColour * glm::vec3(0.2f);
-		glm::vec3 diffuseColor = lightColour * glm::vec3(0.5f);
-		glm::vec3 specularColour = glm::vec3(1.0f);
-
-		glm::vec3 lightDir = glm::normalize(view * glm::vec4(cos(glfwGetTime() / 2), sin(glfwGetTime() / 2), 0.2f, 0.0f));
-		blockShader.setVec3("light.ambient", ambientColor);
-		blockShader.setVec3("light.diffuse", diffuseColor);
-		blockShader.setVec3("light.specular", specularColour);
-		blockShader.setVec3("light.direction", lightDir);
-
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		world.draw(blockShader, playerChunk);
+		draw(blockShader, lightColour);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

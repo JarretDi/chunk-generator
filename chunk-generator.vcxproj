@@ -134,6 +134,7 @@
     <ClCompile Include="chunk-generator\world.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="chunk-generator\main.h" />
     <ClInclude Include="chunk-generator\stb_image.h" />
     <ClInclude Include="chunk-generator\vecn_hash.hpp" />
     <ClInclude Include="chunk-generator\block.h" />

@@ -53,6 +53,9 @@
     <ClInclude Include="chunk-generator\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="chunk-generator\main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="chunk-generator\shader.fs">

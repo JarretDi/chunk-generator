@@ -6,8 +6,8 @@ World::World(uint32_t seed, int renderDistance) : seed(seed) {
 		seed = rd();
 	}
 
-	for (int x = 0; x < renderDistance; x++) {
-		for (int z = 0; z < renderDistance; z++) {
+	for (int x = -renderDistance; x < renderDistance; x++) {
+		for (int z = -renderDistance / 2; z < renderDistance / 2; z++) {
 			chunks.emplace(vec2(x,z), std::make_unique<Chunk>(seed, x, z));
 		}
 	}
@@ -16,7 +16,6 @@ World::World(uint32_t seed, int renderDistance) : seed(seed) {
 void World::loadChunks(glm::ivec2 playerChunk) {
 	for (int x = playerChunk.x - RENDER_DISTANCE; x <= playerChunk.x + RENDER_DISTANCE; x++) {
 		for (int z = playerChunk.y - RENDER_DISTANCE; z <= playerChunk.y + RENDER_DISTANCE; z++) {
-			if (x < 0 || z < 0) continue;
 			glm::vec2 coords(x, z);
 			auto it = chunks.find(coords);
 			if (it == chunks.end()) {
