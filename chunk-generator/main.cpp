@@ -55,6 +55,12 @@ void process_input(GLFWwindow* window) {
 		camera.ProcessKeyboard(RIGHT, deltaTime);
 		hasMoved = true;
 	}
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+		camera.ProcessKeyboard(UP, deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+		camera.ProcessKeyboard(DOWN, deltaTime);
+	}
 	if (hasMoved) {
 		world.loadChunks({ floor(camera.Position.x / CHUNK_MAX_X * 10), floor(camera.Position.z / CHUNK_MAX_Z * 10) });
 	}
