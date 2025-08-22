@@ -14,13 +14,15 @@ World::World(uint32_t seed, int renderDistance) : seed(seed) {
 }
 
 void World::loadChunks(glm::ivec2 playerChunk) {
-	for (int x = playerChunk.x - RENDER_DISTANCE; x <= playerChunk.x + RENDER_DISTANCE; x++) {
-		for (int z = playerChunk.y - RENDER_DISTANCE; z <= playerChunk.y + RENDER_DISTANCE; z++) {
-			glm::vec2 coords(x, z);
-			auto it = chunks.find(coords);
-			if (it == chunks.end()) {
-				float dist = glm::distance((glm::vec2)playerChunk, coords);
-				toLoad.push({coords, dist});
+	for (int x = playerChunk.x - RENDER_DISTANCE / 2; x <= playerChunk.x + RENDER_DISTANCE / 2; x++) {
+		for (int z = playerChunk.y - RENDER_DISTANCE / 2; z <= playerChunk.y + RENDER_DISTANCE / 2; z++) {
+			glm::ivec2 coords(x, z);
+			bool inWorld = chunks.find(coords) != chunks.end();
+			bool inQueue = toLoadAdded.find(coords) != toLoadAdded.end();
+			if (!inWorld && !inQueue) {
+				int squaredDist = (playerChunk.x - coords.x) * (playerChunk.x - coords.x) + (playerChunk.y - coords.y) * (playerChunk.y - coords.y);
+				toLoad.push({coords, squaredDist});
+				toLoadAdded.insert(coords);
 			}
 		}
 	}
@@ -29,11 +31,12 @@ void World::loadChunks(glm::ivec2 playerChunk) {
 void World::update() {
 	for (int i = 0; i < 3; i++) {
 		if (toLoad.empty()) return;
-		vec2 loadNow = toLoad.top().coords;
+		ivec2 loadNow = toLoad.top().coords;
 		toLoad.pop();
 
 		if (chunks.find(loadNow) == chunks.end())
 			chunks.emplace(loadNow, std::make_unique<Chunk>(seed, loadNow.x, loadNow.y));
+		toLoadAdded.erase(loadNow);
 	}
 }
 
@@ -45,11 +48,10 @@ const void World::draw(Shader & shader, glm::ivec2 playerChunk) {
 
 		glm::vec3 chunkCoords = chunk->getModelCoords();
 
-		if (glm::distance(chunkCoords, glm::vec3(playerChunk.x, 0.0f, playerChunk.y)) > RENDER_DISTANCE)
+		if (glm::distance(chunkCoords, glm::vec3(playerChunk.x, 0.0f, playerChunk.y)) > RENDER_DISTANCE * std::max(CHUNK_MAX_X, CHUNK_MAX_Z))
 			continue;
 	
 		glm::mat4 model(1.0f);
-		model = glm::scale(model, vec3(0.1));
 		model = glm::translate(model, (float)CHUNK_MAX_X * chunkCoords);
 		shader.setMat4("model", model);
 		chunk->draw();
