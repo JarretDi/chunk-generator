@@ -10,11 +10,11 @@
 #include <iostream>
 #include <exception>
 
-#include "shader.h"
-#include "camera.h"
 #include "block.h"
+#include "camera.h"
+#include "player.h"
+#include "shader.h"
 #include "world.h"
-#include "main.h"
 
 using glm::vec3;
 using glm::mat4;
@@ -23,7 +23,7 @@ constexpr int WIDTH = 1600;
 constexpr int HEIGHT = 1200;
 
 GLFWwindow * window;
-Camera camera;
+Player player;
 World world;
 
 void frame_buffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -37,7 +37,7 @@ void process_input(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
 	}
-
+	Camera& camera = player.getCamera();
 	bool hasMoved = false;
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		camera.ProcessKeyboard(FORWARD, deltaTime);
@@ -62,7 +62,7 @@ void process_input(GLFWwindow* window) {
 		camera.ProcessKeyboard(DOWN, deltaTime);
 	}
 	if (hasMoved) {
-		world.loadChunks({ floor(camera.Position.x / CHUNK_MAX_X * 10), floor(camera.Position.z / CHUNK_MAX_Z * 10) });
+		world.loadChunks(player.getChunkCoords());
 	}
 }
 
@@ -75,7 +75,7 @@ void process_mouse_movement(GLFWwindow* window, double xPos, double yPos) {
 	lastX = xPos;
 	lastY = yPos;
 
-	camera.ProcessMouseMovement(xOffset, yOffset, true);
+	player.getCamera().ProcessMouseMovement(xOffset, yOffset, true);
 }
 
 void initialize() {
@@ -104,7 +104,6 @@ void initialize() {
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	//glCullFace(GL_FRONT); 
-
 }
 
 unsigned int loadTexture(char const * path) {
@@ -148,15 +147,12 @@ unsigned int loadTexture(char const * path) {
 void draw(Shader& blockShader, glm::vec3& lightColour)
 {
 	blockShader.use();
-	mat4 model(1.0f);
-	model = glm::scale(model, vec3(0.1));
-	mat4 view = camera.GetViewMatrix();
-	mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
-	blockShader.setMat4("model", model);
+	mat4 view = player.getCamera().GetViewMatrix();
+	static mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, (float)RENDER_DISTANCE * std::max(CHUNK_MAX_X, CHUNK_MAX_Z));
 	blockShader.setMat4("view", view);
 	blockShader.setMat4("projection", projection);
 
-	glm::vec2 playerChunk = { floor(camera.Position.x / CHUNK_MAX_X * 10), floor(camera.Position.z / CHUNK_MAX_Z * 10) };
+	glm::ivec2 playerChunk = player.getChunkCoords();
 
 	blockShader.setVec3("lightColour", lightColour);
 	blockShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
@@ -186,7 +182,8 @@ int main() {
 	}
 
 	Shader blockShader("chunk-generator/shader.vs", "chunk-generator/shader.fs");
-	camera = Camera(vec3(0.0f, CHUNK_MAX_Y / 16, 3.0f));
+	player = Player();
+	player.getCamera().MovementSpeed = 25.0f;
 	world = World(0, 16);
 
 	
