@@ -27,6 +27,9 @@
     <ClCompile Include="..\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="chunk-generator\player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="chunk-generator\vecn_hash.hpp">
@@ -56,6 +59,12 @@
     <ClInclude Include="chunk-generator\main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="chunk-generator\player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="raytrace.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="chunk-generator\shader.fs">
@@ -64,6 +73,7 @@
     <None Include="chunk-generator\shader.vs">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="chunk-generator\outline.fs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="chunk-generator\dirt.png">

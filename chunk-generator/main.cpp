@@ -174,6 +174,40 @@ void draw(Shader& blockShader, glm::vec3& lightColour)
 	world.draw(blockShader, playerChunk);
 }
 
+void drawBlockOutline(vec3 coords) {
+	static Shader outlineShader("chunk-generator/shader.vs", "chunk-generator/outline.fs");
+	outlineShader.use();
+
+	mat4 model(1.0f);
+	model = glm::translate(model, coords);
+	model = glm::scale(model, vec3(1.1));
+
+	mat4 view = player.getCamera().GetViewMatrix();
+	static mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, (float)RENDER_DISTANCE * std::max(CHUNK_MAX_X, CHUNK_MAX_Z));
+
+	outlineShader.setMat4("model", model);
+	outlineShader.setMat4("view", view);
+	outlineShader.setMat4("projection", projection);
+
+	static unsigned int VAO = 0, VBO = 0;
+	if (VAO == 0) {
+
+		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &VBO);
+
+		glBindVertexArray(VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+	}
+
+	glBindVertexArray(VAO);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glBindVertexArray(0);
+}
+
 int main() {
 	try {
 		initialize();
@@ -207,6 +241,9 @@ int main() {
 		world.update();
 
 		draw(blockShader, lightColour);
+		if (player.selectBlock(world)) {
+			drawBlockOutline(player.getSelected());
+		}
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

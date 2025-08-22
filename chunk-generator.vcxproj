@@ -132,6 +132,7 @@
     <ClCompile Include="chunk-generator\chunk.cpp" />
     <ClCompile Include="chunk-generator\main.cpp" />
     <ClCompile Include="chunk-generator\world.cpp" />
+    <ClCompile Include="chunk-generator\player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="chunk-generator\main.h" />
@@ -143,8 +144,11 @@
     <ClInclude Include="chunk-generator\shader.h" />
     <ClInclude Include="chunk-generator\world.h" />
     <ClInclude Include="chunk-generator\mesh.h" />
+    <ClInclude Include="chunk-generator\player.h" />
+    <ClInclude Include="raytrace.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="chunk-generator\outline.fs" />
     <None Include="chunk-generator\shader.fs" />
     <None Include="chunk-generator\shader.vs" />
   </ItemGroup>
