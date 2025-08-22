@@ -53,5 +53,7 @@ public:
 	void update();
 
 	const void draw(Shader & shader, ivec2 playerChunk);
+
+	BlockType getBlock(ivec3 worldPosition) const;
 };
 
