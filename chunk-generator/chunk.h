@@ -72,10 +72,14 @@ public:
 
 	void draw() const;
 
-	BlockType getBlock(ivec3 coords) const;
+	inline BlockType getBlock(ivec3 coords) const {
+		if (coords.x >= CHUNK_MAX_X || coords.y >= CHUNK_MAX_Y || coords.z >= CHUNK_MAX_Z ||
+			coords.x < 0 || coords.y < 0 || coords.z < 0) return BlockType::AIR;
 
-	ivec3 getModelCoords() const;
+		return blocks[coords.x + CHUNK_MAX_X * (coords.y + CHUNK_MAX_Y * coords.z)];
+	}
 
-	Chunk(Chunk&&) noexcept = default;
-	Chunk& operator=(Chunk&&) noexcept = default;
+	inline ivec3 getModelCoords() const {
+		return ivec3(worldx, 0, worldz);
+	}
 };

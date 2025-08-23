@@ -23,8 +23,8 @@ constexpr int WIDTH = 1600;
 constexpr int HEIGHT = 1200;
 
 GLFWwindow * window;
-Player player;
-World world;
+Player * gPlayer = nullptr;
+World * gWorld = nullptr;
 
 void frame_buffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
@@ -37,7 +37,7 @@ void process_input(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
 	}
-	Camera& camera = player.getCamera();
+	Camera& camera = gPlayer->camera;
 	bool hasMoved = false;
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		camera.ProcessKeyboard(FORWARD, deltaTime);
@@ -62,7 +62,7 @@ void process_input(GLFWwindow* window) {
 		camera.ProcessKeyboard(DOWN, deltaTime);
 	}
 	if (hasMoved) {
-		world.loadChunks(player.getChunkCoords());
+		gWorld->loadChunks(gPlayer->getChunkCoords());
 	}
 }
 
@@ -75,7 +75,7 @@ void process_mouse_movement(GLFWwindow* window, double xPos, double yPos) {
 	lastX = xPos;
 	lastY = yPos;
 
-	player.getCamera().ProcessMouseMovement(xOffset, yOffset, true);
+	gPlayer->camera.ProcessMouseMovement(xOffset, yOffset, true);
 }
 
 void initialize() {
@@ -147,12 +147,12 @@ unsigned int loadTexture(char const * path) {
 void draw(Shader& blockShader, glm::vec3& lightColour)
 {
 	blockShader.use();
-	mat4 view = player.getCamera().GetViewMatrix();
+	mat4 view = gPlayer->camera.GetViewMatrix();
 	static mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, (float)RENDER_DISTANCE * std::max(CHUNK_MAX_X, CHUNK_MAX_Z));
 	blockShader.setMat4("view", view);
 	blockShader.setMat4("projection", projection);
 
-	glm::ivec2 playerChunk = player.getChunkCoords();
+	glm::ivec2 playerChunk = gPlayer->getChunkCoords();
 
 	blockShader.setVec3("lightColour", lightColour);
 	blockShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
@@ -171,7 +171,7 @@ void draw(Shader& blockShader, glm::vec3& lightColour)
 	blockShader.setVec3("light.direction", lightDir);
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	world.draw(blockShader, playerChunk);
+	gWorld->draw(blockShader, playerChunk);
 }
 
 void drawBlockOutline(vec3 coords) {
@@ -182,7 +182,7 @@ void drawBlockOutline(vec3 coords) {
 	model = glm::translate(model, coords);
 	model = glm::scale(model, vec3(1.1));
 
-	mat4 view = player.getCamera().GetViewMatrix();
+	mat4 view = gPlayer->camera.GetViewMatrix();
 	static mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, (float)RENDER_DISTANCE * std::max(CHUNK_MAX_X, CHUNK_MAX_Z));
 
 	outlineShader.setMat4("model", model);
@@ -216,9 +216,12 @@ int main() {
 	}
 
 	Shader blockShader("chunk-generator/shader.vs", "chunk-generator/shader.fs");
-	player = Player();
-	player.getCamera().MovementSpeed = 25.0f;
-	world = World(0, 16);
+
+	Player player{};
+	World world{0};
+	gPlayer = &player;
+	gWorld = &world;
+	gPlayer->camera.MovementSpeed = 25.0f;
 
 	
 	unsigned int dirtTex = loadTexture("grass.png");
@@ -242,7 +245,7 @@ int main() {
 
 		draw(blockShader, lightColour);
 		if (player.selectBlock(world)) {
-			drawBlockOutline(player.getSelected());
+			drawBlockOutline(gPlayer->getSelected());
 		}
 
 		glfwSwapBuffers(window);

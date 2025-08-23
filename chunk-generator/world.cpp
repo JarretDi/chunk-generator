@@ -1,16 +1,13 @@
 #include "world.h"
 
-World::World(uint32_t seed, int renderDistance) : seed(seed) {
+World::World(uint32_t seed) : seed(seed) {
 	if (seed == UINT32_MAX) {
 		std::random_device rd;
 		seed = rd();
 	}
 
-	for (int x = -renderDistance; x < renderDistance; x++) {
-		for (int z = -renderDistance / 2; z < renderDistance / 2; z++) {
-			chunks.emplace(vec2(x,z), std::make_unique<Chunk>(seed, x, z));
-		}
-	}
+	loadChunks({ 0, 0 });
+	update(2 * RENDER_DISTANCE * RENDER_DISTANCE);
 }
 
 void World::loadChunks(glm::ivec2 playerChunk) {
@@ -28,8 +25,8 @@ void World::loadChunks(glm::ivec2 playerChunk) {
 	}
 }
 
-void World::update() {
-	for (int i = 0; i < 3; i++) {
+void World::update(int numChunks) {
+	for (int i = 0; i < numChunks; i++) {
 		if (toLoad.empty()) return;
 		ivec2 loadNow = toLoad.top().coords;
 		toLoad.pop();
@@ -48,7 +45,7 @@ const void World::draw(Shader & shader, glm::ivec2 playerChunk) {
 
 		glm::vec3 chunkCoords = chunk->getModelCoords();
 
-		if (glm::distance(chunkCoords, glm::vec3(playerChunk.x, 0.0f, playerChunk.y)) > RENDER_DISTANCE * std::max(CHUNK_MAX_X, CHUNK_MAX_Z))
+		if (glm::distance(chunkCoords, glm::vec3(playerChunk.x, 0.0f, playerChunk.y)) > 0.5 * RENDER_DISTANCE * std::max(CHUNK_MAX_X, CHUNK_MAX_Z))
 			continue;
 	
 		glm::mat4 model(1.0f);

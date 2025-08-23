@@ -29,17 +29,6 @@ Chunk::~Chunk() {
 	glDeleteBuffers(1, &VBO);
 }
 
-BlockType Chunk::getBlock(ivec3 coords) const {
-	if (coords.x >= CHUNK_MAX_X || coords.y >= CHUNK_MAX_Y || coords.z >= CHUNK_MAX_Z ||
-		coords.x < 0 || coords.y < 0 || coords.z < 0) return BlockType::AIR;
-
-	return blocks[coords.x + CHUNK_MAX_X * (coords.y + CHUNK_MAX_Y * coords.z)];
-}
-
-ivec3 Chunk::getModelCoords() const {
-	return ivec3(worldx, 0, worldz);
-}
-
 void Chunk::draw() const {
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, meshVertices.size());

@@ -44,13 +44,11 @@ private:
 	std::unordered_set<ivec2, vec2Hash> toLoadAdded;
 
 public:
-	World() : seed(seed) {}
-
-	World(uint32_t seed, int numChunks = 4);
+	World(uint32_t seed = UINT32_MAX);
 
 	void loadChunks(ivec2 playerChunk);
 
-	void update();
+	void update(int numChunks = 3);
 
 	const void draw(Shader & shader, ivec2 playerChunk);
 

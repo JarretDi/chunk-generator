@@ -1,13 +1,5 @@
 #include "player.h"
 
-Player::Player(ivec3 start) {
-	camera = Camera(start);
-}
-
-ivec2 Player::getChunkCoords() const {
-	return { camera.Position.x / CHUNK_MAX_X, camera.Position.z / CHUNK_MAX_Z };
-}
-
 bool Player::selectBlock(World & world) {
 	vec3 start = camera.Position;
 	vec3 dir = glm::normalize(camera.Front);
@@ -38,7 +30,7 @@ bool Player::selectBlock(World & world) {
 			selected.hit = true;
 			selected.coords = current;
 			selected.normal = normal;
-			std::cout << "BLOCK SELECTED AT (" << current.x << ", " << current.y << ", " << current.z << ")\n";
+			//std::cout << "BLOCK SELECTED AT (" << current.x << ", " << current.y << ", " << current.z << ")\n";
 			return true;
 		}
 
