@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 
 #include <bitset>
+#include <initializer_list>
 #include <string>
 
 #include "mesh.h"
@@ -35,6 +36,23 @@ namespace Block {
         std::string name;
         int textureIndices[6]{};
         std::bitset<static_cast<size_t>(BlockTag::COUNT)> tags;
+
+        // Constructor to allow more convenient syntax
+        BlockDef(
+            std::string name, 
+            std::initializer_list<int> textures, 
+            std::initializer_list<BlockTag> tagList)
+            : name(std::move(name)) {
+            assert(textures.size() == 6);
+            int i = 0;
+            for (auto t : textures) {
+                textureIndices[i++] = t;
+            }
+
+            for (auto t : tagList) {
+                tags.set(static_cast<size_t>(t));
+            }
+        }
 
         inline bool hasTag(BlockTag tag) const {
             return tags.test(static_cast<size_t>(tag));
