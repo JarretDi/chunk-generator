@@ -4,6 +4,7 @@
 
 #include <bitset>
 #include <initializer_list>
+#include <iostream>
 #include <string>
 
 #include "mesh.h"
@@ -57,6 +58,26 @@ namespace Block {
         inline bool hasTag(BlockTag tag) const {
             return tags.test(static_cast<size_t>(tag));
         }
+
+        friend std::ostream& operator<<(std::ostream& os, const BlockDef& block) {
+            os << "Block: " << block.name << "\n";
+
+            os << "Textures: ";
+            for (int i = 0; i < 6; ++i) os << block.textureIndices[i] << " ";
+            os << "\n";
+
+            os << "Tags: ";
+            bool first = true;
+            for (size_t i = 0; i < static_cast<size_t>(BlockTag::COUNT); ++i) {
+                if (block.tags.test(i)) {
+                    if (!first) os << ", ";
+                    os << tagToString(static_cast<BlockTag>(i));
+                    first = false;
+                }
+            }
+            os << "\n";
+            return os;
+        }
     };
 
     class BlockRegistry { // Singleton
@@ -72,6 +93,12 @@ namespace Block {
 
         inline const BlockDef& get(BlockType type) const {
             return blockDefs.at(type);
+        }
+
+        inline void print() const {
+            for (const auto& def : blockDefs) {
+                std::cout << def << "\n";
+            }
         }
 
         void testRegister();
