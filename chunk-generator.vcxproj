@@ -148,6 +148,7 @@
     <ClInclude Include="raytrace.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="chunk-generator\cursor.vs" />
     <None Include="chunk-generator\outline.fs" />
     <None Include="chunk-generator\shader.fs" />
     <None Include="chunk-generator\shader.vs" />

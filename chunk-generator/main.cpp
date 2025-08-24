@@ -208,6 +208,35 @@ void drawBlockOutline(vec3 coords) {
 	glBindVertexArray(0);
 }
 
+void drawCursor() {
+	static float crosshairVerts[] = {
+	-0.02f,  0.0f,   0.02f, 0.0f,   
+	 0.0f, -0.02f,   0.0f, 0.02f,  
+	};
+
+	static Shader crosshairShader("chunk-generator/cursor.vs", "chunk-generator/outline.fs");
+	crosshairShader.use();
+
+	static unsigned int VAO = 0, VBO = 0;
+	if (VAO == 0) {
+		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &VBO);
+
+		glBindVertexArray(VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(crosshairVerts), crosshairVerts, GL_STATIC_DRAW);
+
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+
+		glBindVertexArray(0);
+	}
+
+	glBindVertexArray(VAO);
+	glDrawArrays(GL_LINES, 0, 4);
+	glBindVertexArray(0);
+}
+
 void Block::BlockRegistry::testRegister() {
 	using namespace Block;
 	registerBlock({ "Air", {0, 0 ,0 ,0 ,0, 0}, {BlockTag::Air, BlockTag::Transparent} });
@@ -253,6 +282,7 @@ int main() {
 		if (player.selectBlock(world)) {
 			drawBlockOutline(gPlayer->getSelected());
 		}
+		drawCursor();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

@@ -74,6 +74,7 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="chunk-generator\outline.fs" />
+    <None Include="chunk-generator\cursor.vs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="chunk-generator\dirt.png">

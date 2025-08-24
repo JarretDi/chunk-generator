@@ -1,8 +1,11 @@
 #include "player.h"
 
 bool Player::selectBlock(World & world) {
+	vec3 start = camera.Position + vec3(0.5);
 	vec3 dir = glm::normalize(camera.Front);
-	vec3 start = camera.Position;
+	if (fmod(start.x, 1.0f) == 0.0f) start.x += 1e-4f * dir.x;
+	if (fmod(start.y, 1.0f) == 0.0f) start.y += 1e-4f * dir.y;
+	if (fmod(start.z, 1.0f) == 0.0f) start.z += 1e-4f * dir.z;
 
 	ivec3 current = glm::floor(start);
 
@@ -10,17 +13,17 @@ bool Player::selectBlock(World & world) {
 	int stepy = dir.y > 0 ? 1 : -1;
 	int stepz = dir.z > 0 ? 1 : -1;
 
-	int nextVoxelBoundaryX = dir.x > 0 ? floor(start.x) + 1.0f : ceil(start.x) - 1.0f;
-	int nextVoxelBoundaryY = dir.y > 0 ? floor(start.y) + 1.0f : ceil(start.y) - 1.0f;
-	int nextVoxelBoundaryZ = dir.z > 0 ? floor(start.z) + 1.0f : ceil(start.z) - 1.0f;
+	float nextVoxelBoundaryX = dir.x > 0 ? floor(start.x) + 1.0f : ceil(start.x) - 1.0f;
+	float nextVoxelBoundaryY = dir.y > 0 ? floor(start.y) + 1.0f : ceil(start.y) - 1.0f;
+	float nextVoxelBoundaryZ = dir.z > 0 ? floor(start.z) + 1.0f : ceil(start.z) - 1.0f;
 
 	float tMaxX = dir.x != 0 ? (nextVoxelBoundaryX - start.x) / dir.x : INFINITY;
 	float tMaxY = dir.y != 0 ? (nextVoxelBoundaryY - start.y) / dir.y : INFINITY;
 	float tMaxZ = dir.z != 0 ? (nextVoxelBoundaryZ - start.z) / dir.z : INFINITY;
 
-	float tDeltaX = abs(1 / dir.x);
-	float tDeltaY = abs(1 / dir.y);
-	float tDeltaZ = abs(1 / dir.z);
+	float tDeltaX = dir.x != 0 ? abs(1.0f / dir.x) : INFINITY;
+	float tDeltaY = dir.y != 0 ? abs(1.0f / dir.y) : INFINITY;
+	float tDeltaZ = dir.z != 0 ? abs(1.0f / dir.z) : INFINITY;
 
 	ivec3 normal;
 	float distanceTraveled = 0;
