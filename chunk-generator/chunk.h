@@ -43,7 +43,7 @@ static constexpr int INITIAL_AMPLITUDE = 32;
 class Chunk
 {
 private:
-	vector<BlockType> blocks;
+	vector<Block::BlockType> blocks;
 
 	unsigned int VAO, VBO;
 
@@ -72,11 +72,21 @@ public:
 
 	void draw() const;
 
-	inline BlockType getBlock(ivec3 coords) const {
-		if (coords.x >= CHUNK_MAX_X || coords.y >= CHUNK_MAX_Y || coords.z >= CHUNK_MAX_Z ||
-			coords.x < 0 || coords.y < 0 || coords.z < 0) return BlockType::AIR;
+	inline const Block::BlockDef& getBlockDef(ivec3 coords) const {
+		using Block::BlockRegistry;
 
-		return blocks[coords.x + CHUNK_MAX_X * (coords.y + CHUNK_MAX_Y * coords.z)];
+		const bool outOfBounds =
+			coords.x < 0 || coords.x >= CHUNK_MAX_X ||
+			coords.y < 0 || coords.y >= CHUNK_MAX_Y ||
+			coords.z < 0 || coords.z >= CHUNK_MAX_Z;
+
+		if (outOfBounds) 
+			return BlockRegistry::getInstance().getDef(0);
+
+		int index = coords.x + CHUNK_MAX_X * (coords.y + CHUNK_MAX_Y * coords.z);
+		Block::BlockType type = blocks[index];
+
+		return BlockRegistry::getInstance().getDef(type);
 	}
 
 	inline ivec3 getModelCoords() const {

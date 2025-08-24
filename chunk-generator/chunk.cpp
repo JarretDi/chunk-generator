@@ -54,21 +54,22 @@ void Chunk::updateMesh() {
 }
 
 void Chunk::addBlockMesh(ivec3 coords) {
-	if (getBlock(coords) == BlockType::AIR) return;
+	using namespace Block;
+	if (getBlockDef(coords).hasTag(BlockTag::Air)) return;
 
-	if (getBlock(coords + ivec3(0, 0, 1)) == BlockType::AIR) addFace(coords, 0); // front
-	if (getBlock(coords + ivec3(0, 0, -1)) == BlockType::AIR) addFace(coords, 1); // back
-	if (getBlock(coords + ivec3(-1, 0, 0)) == BlockType::AIR) addFace(coords, 2); // left
-	if (getBlock(coords + ivec3(1, 0, 0)) == BlockType::AIR) addFace(coords, 3); // right
-	if (getBlock(coords + ivec3(0, 1, 0)) == BlockType::AIR) addFace(coords, 4); // top
-	if (getBlock(coords + ivec3(0, -1, 0)) == BlockType::AIR) addFace(coords, 5); // bottom
+	if (getBlockDef(coords + ivec3(0, 0, 1)).hasTag(BlockTag::Transparent)) addFace(coords, 0); // front
+	if (getBlockDef(coords + ivec3(0, 0, -1)).hasTag(BlockTag::Transparent)) addFace(coords, 1); // back
+	if (getBlockDef(coords + ivec3(-1, 0, 0)).hasTag(BlockTag::Transparent)) addFace(coords, 2); // left
+	if (getBlockDef(coords + ivec3(1, 0, 0)).hasTag(BlockTag::Transparent)) addFace(coords, 3); // right
+	if (getBlockDef(coords + ivec3(0, 1, 0)).hasTag(BlockTag::Transparent)) addFace(coords, 4); // top
+	if (getBlockDef(coords + ivec3(0, -1, 0)).hasTag(BlockTag::Transparent)) addFace(coords, 5); // bottom
 }
 
 void Chunk::addFace(ivec3 coords, int index) {
 	int start = index * 6;
 
 	for (int i = 0; i < 6; i++) {
-		Vertex vertex = cubeVertices[start + i];
+		Vertex vertex = Block::cubeVertices[start + i];
 		vertex.coords += coords;
 		meshVertices.push_back(vertex);
 	}
@@ -94,7 +95,7 @@ void Chunk::generate(int octaves) {
 			int height = HEIGHT_BASELINE + offsets[x + CHUNK_MAX_X * z];
 
 			for (int y = 0; y < height; y++) {
-				blocks[x + CHUNK_MAX_X * (y + CHUNK_MAX_Y * z)] = BlockType::GRASS;
+				blocks[x + CHUNK_MAX_X * (y + CHUNK_MAX_Y * z)] = 1; //TODO: Replace with different blocks
 			}
 		}
 	}

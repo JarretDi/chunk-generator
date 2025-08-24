@@ -1,8 +1,8 @@
 #include "player.h"
 
 bool Player::selectBlock(World & world) {
-	vec3 start = camera.Position;
 	vec3 dir = glm::normalize(camera.Front);
+	vec3 start = camera.Position;
 
 	ivec3 current = glm::floor(start);
 
@@ -26,7 +26,7 @@ bool Player::selectBlock(World & world) {
 	float distanceTraveled = 0;
 
 	while (distanceTraveled <= MAX_SELECT_DISTANCE) {
-		if (world.getBlock(current) != BlockType::AIR) {
+		if (!world.getBlockDef(current).hasTag(Block::BlockTag::Air)) {
 			selected.hit = true;
 			selected.coords = current;
 			selected.normal = normal;

@@ -55,9 +55,9 @@ const void World::draw(Shader & shader, glm::ivec2 playerChunk) {
 	}
 }
 
-BlockType World::getBlock(ivec3 worldPosition) const {
+Block::BlockDef World::getBlockDef(ivec3 worldPosition) const {
 	// should be the only out of bounds check (world is theoretically infinite)
-	if (worldPosition.y < 0 || worldPosition.y >= CHUNK_MAX_Y) return BlockType::AIR;
+	if (worldPosition.y < 0 || worldPosition.y >= CHUNK_MAX_Y) return Block::BlockRegistry::getInstance().getDef(0);
 
 	// for caching to reduce number of map .at calls
 	static Chunk* lastChunk = nullptr;
@@ -79,5 +79,5 @@ BlockType World::getBlock(ivec3 worldPosition) const {
 		lastChunkCoords = chunkWorldCoords;
 	}
 
-	return lastChunk->getBlock(inChunkCoords);
+	return lastChunk->getBlockDef(inChunkCoords);
 }

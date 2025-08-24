@@ -197,7 +197,7 @@ void drawBlockOutline(vec3 coords) {
 
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(Block::cubeVertices), Block::cubeVertices, GL_STATIC_DRAW);
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
@@ -208,6 +208,12 @@ void drawBlockOutline(vec3 coords) {
 	glBindVertexArray(0);
 }
 
+void Block::BlockRegistry::testRegister() {
+	using namespace Block;
+	registerBlock({ "Air", {0, 0 ,0 ,0 ,0, 0}, {BlockTag::Air, BlockTag::Transparent} });
+	registerBlock({ "Grass", {1, 1 ,1 ,1 , 1, 1}, {} });
+}
+
 int main() {
 	try {
 		initialize();
@@ -215,6 +221,7 @@ int main() {
 		std::cout << e.what() << std::endl;
 	}
 
+	Block::BlockRegistry::getInstance().testRegister();
 	Shader blockShader("chunk-generator/shader.vs", "chunk-generator/shader.fs");
 
 	Player player{};
@@ -222,7 +229,6 @@ int main() {
 	gPlayer = &player;
 	gWorld = &world;
 	gPlayer->camera.MovementSpeed = 25.0f;
-
 	
 	unsigned int dirtTex = loadTexture("grass.png");
 

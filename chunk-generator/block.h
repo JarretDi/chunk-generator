@@ -16,7 +16,7 @@ namespace Block {
 
     // Maintain the BlockTag and tagToString together
     enum class BlockTag : uint8_t {
-        Invisible,
+        Air,
         Transparent,
 
         COUNT, // used to easily get the length of the enum
@@ -24,7 +24,7 @@ namespace Block {
 
     inline std::string tagToString(BlockTag tag) {
         switch (tag) {
-            case BlockTag::Invisible:   
+            case BlockTag::Air:   
                 return "Invisible";
             case BlockTag::Transparent: 
                 return "Transparent";
@@ -88,10 +88,11 @@ namespace Block {
         }
 
         inline void registerBlock(BlockDef def) {
-            blockDefs[uniqueID++] = std::move(def);
+            blockDefs.push_back(std::move(def));
+            uniqueID++;
         }
 
-        inline const BlockDef& get(BlockType type) const {
+        inline const BlockDef& getDef(BlockType type) const {
             return blockDefs.at(type);
         }
 
@@ -104,7 +105,7 @@ namespace Block {
         void testRegister();
 
     private:
-        int uniqueID = 0;
+        BlockType uniqueID = 0;
         std::vector<BlockDef> blockDefs;
         BlockRegistry() = default;
     };
