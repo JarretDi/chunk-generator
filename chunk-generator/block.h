@@ -161,4 +161,60 @@ namespace Block {
         {{-0.5f, -0.5f,  0.5f}, {0,-1,0}, {0,1}},
         {{-0.5f, -0.5f, -0.5f}, {0,-1,0}, {0,0}}
     };
+
+    const Vertex2 cubeVertices2[] = {
+        // +X face (0)
+        Vertex2(ivec3(1,0,0), 0, 0, 1),
+        Vertex2(ivec3(1,1,0), 0, 1, 1),
+        Vertex2(ivec3(1,1,1), 0, 2, 1),
+
+        Vertex2(ivec3(1,0,0), 0, 0, 1),
+        Vertex2(ivec3(1,1,1), 0, 2, 1),
+        Vertex2(ivec3(1,0,1), 0, 3, 1),
+
+        // -X face (1)
+        Vertex2(ivec3(0,0,0), 1, 0, 1),
+        Vertex2(ivec3(0,0,1), 1, 1, 1),
+        Vertex2(ivec3(0,1,1), 1, 2, 1),
+
+        Vertex2(ivec3(0,0,0), 1, 0, 1),
+        Vertex2(ivec3(0,1,1), 1, 2, 1),
+        Vertex2(ivec3(0,1,0), 1, 3, 1),
+
+        // +Y face (2)
+        Vertex2(ivec3(0,1,0), 2, 0, 1),
+        Vertex2(ivec3(0,1,1), 2, 1, 1),
+        Vertex2(ivec3(1,1,1), 2, 2, 1),
+
+        Vertex2(ivec3(0,1,0), 2, 0, 1),
+        Vertex2(ivec3(1,1,1), 2, 2, 1),
+        Vertex2(ivec3(1,1,0), 2, 3, 1),
+
+        // -Y face (3)
+        Vertex2(ivec3(0,0,0), 3, 0, 1),
+        Vertex2(ivec3(1,0,1), 3, 1, 1),
+        Vertex2(ivec3(0,0,1), 3, 2, 1),
+
+        Vertex2(ivec3(0,0,0), 3, 0, 1),
+        Vertex2(ivec3(1,0,0), 3, 3, 1),
+        Vertex2(ivec3(1,0,1), 3, 1, 1),
+
+        // +Z face (4)
+        Vertex2(ivec3(0,0,1), 4, 0, 1),
+        Vertex2(ivec3(1,0,1), 4, 1, 1),
+        Vertex2(ivec3(1,1,1), 4, 2, 1),
+
+        Vertex2(ivec3(0,0,1), 4, 0, 1),
+        Vertex2(ivec3(1,1,1), 4, 2, 1),
+        Vertex2(ivec3(0,1,1), 4, 3, 1),
+
+        // -Z face (5)
+        Vertex2(ivec3(0,0,0), 5, 0, 1),
+        Vertex2(ivec3(0,1,0), 5, 1, 1),
+        Vertex2(ivec3(1,1,0), 5, 2, 1),
+
+        Vertex2(ivec3(0,0,0), 5, 0, 1),
+        Vertex2(ivec3(1,1,0), 5, 2, 1),
+        Vertex2(ivec3(1,0,0), 5, 3, 1),
+    };
 }
