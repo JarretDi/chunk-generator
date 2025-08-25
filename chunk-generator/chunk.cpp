@@ -49,7 +49,7 @@ void Chunk::updateMesh() {
 	}
 
 	glBindVertexArray(VAO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * meshVertices.size(), meshVertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * meshVertices.size(), meshVertices.data(), GL_DYNAMIC_DRAW);
 	glBindVertexArray(0);
 }
 

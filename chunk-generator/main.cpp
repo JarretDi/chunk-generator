@@ -82,6 +82,7 @@ void initialize() {
 	glfwInit();
 	glfwWindowHint(GLFW_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_SAMPLES, 4);
 
 	window = glfwCreateWindow(WIDTH, HEIGHT, "ChunkGenerator", NULL, NULL);
 	if (window == nullptr) {
@@ -103,7 +104,7 @@ void initialize() {
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
-	//glCullFace(GL_FRONT); 
+	glEnable(GL_MULTISAMPLE);
 }
 
 unsigned int loadTexture(char const * path) {
@@ -239,8 +240,8 @@ void drawCursor() {
 
 void Block::BlockRegistry::testRegister() {
 	using namespace Block;
-	registerBlock({ "Air", {0, 0 ,0 ,0 ,0, 0}, {BlockTag::Air, BlockTag::Transparent} });
-	registerBlock({ "Grass", {1, 1 ,1 ,1 , 1, 1}, {} });
+	registerBlock({ "Air", {0, 0, 0, 0, 0, 0}, {BlockTag::Air, BlockTag::Transparent} });
+	registerBlock({ "Grass", {1, 1, 1, 1, 1, 1}, {} });
 }
 
 int main() {
@@ -261,8 +262,12 @@ int main() {
 	
 	unsigned int dirtTex = loadTexture("grass.png");
 
-	std::cout << "Worldsize:" << sizeof(World) << std::endl;
-	std::cout << "Chunksize:" << sizeof(Chunk) << std::endl;
+	std::cout << "World size:" << sizeof(World) << std::endl;
+	std::cout << "Chunk size:" << sizeof(Chunk) << std::endl;
+	std::cout << "Long size:" << sizeof(long) << std::endl;
+	std::cout << "Vec3 size:" << sizeof(glm::vec3) << std::endl;
+	std::cout << "Vertex size:" << sizeof(Vertex) << std::endl;
+	std::cout << "Vertex2 size:" << sizeof(Vertex2) << std::endl;
 
 	glm::vec3 lightColour(1.0f);
 

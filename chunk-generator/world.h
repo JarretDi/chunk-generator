@@ -48,7 +48,7 @@ public:
 
 	void loadChunks(ivec2 playerChunk);
 
-	void update(int numChunks = 3);
+	void update(int numChunks = 1);
 
 	const void draw(Shader & shader, ivec2 playerChunk);
 

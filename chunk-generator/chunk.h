@@ -30,9 +30,9 @@ has a world x, y (assuming no chunks stack on each other)
 contains 16 x 128 x 16 blocks 
 */
 
-static constexpr int CHUNK_MAX_X = 16;
-static constexpr int CHUNK_MAX_Y = 64;
-static constexpr int CHUNK_MAX_Z = 16;
+static constexpr int CHUNK_MAX_X = 32;
+static constexpr int CHUNK_MAX_Y = 48;
+static constexpr int CHUNK_MAX_Z = 32;
 
 static constexpr int HEIGHT_BASELINE = CHUNK_MAX_Y / 2;
 
