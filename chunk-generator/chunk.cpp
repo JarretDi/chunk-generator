@@ -20,6 +20,8 @@ Chunk::Chunk(uint32_t seed, int worldx, int worldz) : seed(seed), worldx(worldx)
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
 	glEnableVertexAttribArray(2);
 
+	std::cout << "Chunk at (" << worldx << ", " << worldz << "): " << VAO << ", " << VBO << "\n";
+
 	updateMesh();
 	glBindVertexArray(0);
 }
@@ -37,6 +39,9 @@ void Chunk::draw() const {
 void Chunk::updateMesh() {
 	meshVertices.clear();
 	meshVertices.reserve(CHUNK_MAX_X * CHUNK_MAX_Y * CHUNK_MAX_Z * 6 * 4 / 2);
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * meshVertices.size(), meshVertices.data(), GL_DYNAMIC_DRAW);
 
 	int currentIndex = 0;
 
@@ -48,7 +53,6 @@ void Chunk::updateMesh() {
 		}
 	}
 
-	glBindVertexArray(VAO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * meshVertices.size(), meshVertices.data(), GL_DYNAMIC_DRAW);
 	glBindVertexArray(0);
 }

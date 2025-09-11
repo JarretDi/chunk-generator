@@ -3,10 +3,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <exception>
 #include <queue>
 #include <random>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "chunk.h"
@@ -52,6 +54,12 @@ public:
 
 	const void draw(Shader & shader, ivec2 playerChunk);
 
+	// returns a tuple where the first is chunk coords
+	// econd is in chunk block coords
+	std::pair<ivec2, ivec3> findChunk(ivec3 worldPosition) const;
+
 	Block::BlockDef getBlockDef(ivec3 worldPosition) const;
+
+	bool removeBlockAt(ivec3 worldPosition);
 };
 

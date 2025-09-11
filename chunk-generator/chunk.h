@@ -89,6 +89,30 @@ public:
 		return BlockRegistry::getInstance().getDef(type);
 	}
 
+	inline bool removeBlock(ivec3 coords) {
+		const bool outOfBounds =
+			coords.x < 0 || coords.x >= CHUNK_MAX_X ||
+			coords.y < 0 || coords.y >= CHUNK_MAX_Y ||
+			coords.z < 0 || coords.z >= CHUNK_MAX_Z;
+
+		if (outOfBounds)
+			return false;
+
+
+		int index = coords.x + CHUNK_MAX_X * (coords.y + CHUNK_MAX_Y * coords.z);
+		std::cout << "Block ID before removal: " << +blocks[index] << std::endl;
+		std::cout << "BlockDef: " << getBlockDef(coords).name << std::endl;
+
+		blocks[index] = 0;
+
+		std::cout << "Block ID after removal: " << +blocks[index] << std::endl;
+		std::cout << "BlockDef: " << getBlockDef(coords).name << std::endl;
+
+		updateMesh();
+
+		return true;
+	}
+
 	inline ivec3 getModelCoords() const {
 		return ivec3(worldx, 0, worldz);
 	}

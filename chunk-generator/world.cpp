@@ -55,23 +55,23 @@ const void World::draw(Shader & shader, glm::ivec2 playerChunk) {
 	}
 }
 
-Block::BlockDef World::getBlockDef(ivec3 worldPosition) const {
-	// should be the only out of bounds check (world is theoretically infinite)
-	if (worldPosition.y < 0 || worldPosition.y >= CHUNK_MAX_Y) return Block::BlockRegistry::getInstance().getDef(0);
+std::pair<ivec2, ivec3> World::findChunk(ivec3 worldPosition) const {
+	// should be the only out of bounds check (world is theoretically infinite along x and z)
+	if (worldPosition.y < 0 || worldPosition.y >= CHUNK_MAX_Y) throw std::out_of_range("Invalid y value");
 
-	// for caching to reduce number of map .at calls
+	// for caching to reduce number of map .at calls, stores the last visited chunk
 	static Chunk* lastChunk = nullptr;
 	static ivec2 lastChunkCoords;
 
 	ivec2 chunkWorldCoords = {
-		floor((float)worldPosition.x / CHUNK_MAX_X), 
+		floor((float)worldPosition.x / CHUNK_MAX_X),
 		floor((float)worldPosition.z / CHUNK_MAX_Z)
 	};
 
-	ivec3 inChunkCoords = { 
+	ivec3 inChunkCoords = {
 		(worldPosition.x % CHUNK_MAX_X + CHUNK_MAX_X) % CHUNK_MAX_X,
 		worldPosition.y,
-		(worldPosition.z % CHUNK_MAX_Z + CHUNK_MAX_Z) % CHUNK_MAX_Z 
+		(worldPosition.z % CHUNK_MAX_Z + CHUNK_MAX_Z) % CHUNK_MAX_Z
 	};
 
 	if (lastChunk == nullptr || lastChunkCoords != chunkWorldCoords) {
@@ -79,5 +79,17 @@ Block::BlockDef World::getBlockDef(ivec3 worldPosition) const {
 		lastChunkCoords = chunkWorldCoords;
 	}
 
-	return lastChunk->getBlockDef(inChunkCoords);
+	return { chunkWorldCoords, inChunkCoords };
+}
+
+Block::BlockDef World::getBlockDef(ivec3 worldPosition) const {
+	const auto & [chunkCoords, inChunkCoords] = findChunk(worldPosition);
+
+	return chunks.at(chunkCoords)->getBlockDef(inChunkCoords);
+}
+
+bool World::removeBlockAt(ivec3 worldPosition) {
+	const auto& [chunkCoords, inChunkCoords] = findChunk(worldPosition);
+
+	return chunks.at(chunkCoords)->removeBlock(inChunkCoords);
 }
