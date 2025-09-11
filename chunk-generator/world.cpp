@@ -93,3 +93,9 @@ bool World::removeBlockAt(ivec3 worldPosition) {
 
 	return chunks.at(chunkCoords)->removeBlock(inChunkCoords);
 }
+
+Block::BlockType World::placeBlockAt(ivec3 worldPosition, Block::BlockType type) {
+	const auto& [chunkCoords, inChunkCoords] = findChunk(worldPosition);
+
+	return chunks.at(chunkCoords)->placeBlock(inChunkCoords, type);
+}

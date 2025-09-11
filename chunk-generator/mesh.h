@@ -55,7 +55,7 @@ struct Vertex2
 		ivec3 p = getPos();
 		p += offset;
 
-		data &= ~65535; // clears old x, y, z
+		data &= ~65535; // clears old x, y, z (65535 = 2^16, clears 16 bits)
 		// Re-pack into data
 		data |= (p.x & 0x1F) << 0;
 		data |= (p.y & 0x3F) << 5;

@@ -79,10 +79,14 @@ void process_mouse_movement(GLFWwindow* window, double xPos, double yPos) {
 }
 
 void process_mouse_click(GLFWwindow* window, int button, int action, int mods) {
-
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && gPlayer->selectBlock(*gWorld)) {
-		ivec3 blockCoords = gPlayer->getSelected();
-		gWorld->removeBlockAt(blockCoords);
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && gPlayer->getSelected().hit) {
+		gWorld->removeBlockAt(gPlayer->getSelected().coords);
+	}
+	else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS && gPlayer->getSelected().hit) {
+		ivec3 target = gPlayer->getSelected().coords + gPlayer->getSelected().normal;
+		if (gWorld->getBlockDef(target).hasTag(Block::BlockTag::Air)) {
+			gWorld->placeBlockAt(target, 1);
+		}
 	}
 }
 
@@ -114,6 +118,8 @@ void initialize() {
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_MULTISAMPLE);
+
+	std::cerr << "Finished Initialization!" << std::endl;
 }
 
 unsigned int loadTexture(char const * path) {
@@ -267,7 +273,10 @@ int main() {
 	Shader blockShader("chunk-generator/shader.vs", "chunk-generator/shader.fs");
 
 	Player player{};
+
+	std::cerr << "Generating world..." << std::endl;
 	World world{0};
+	std::cerr << "World generated!" << std::endl;
 	gPlayer = &player;
 	gWorld = &world;
 	gPlayer->camera.MovementSpeed = 25.0f;
@@ -300,7 +309,7 @@ int main() {
 
 		draw(blockShader, lightColour);
 		if (player.selectBlock(world)) {
-			drawBlockOutline(gPlayer->getSelected());
+			drawBlockOutline(player.getSelected().coords);
 		}
 		drawCursor();
 

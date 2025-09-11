@@ -11,16 +11,13 @@ constexpr int MAX_SELECT_DISTANCE = 8;
 
 class Player
 {
-private:
+public:
 	struct Raycast {
 		bool hit;
 		ivec3 coords;
 		ivec3 normal;
 	};
 
-	Raycast selected{false, vec3(0), vec3(0)};
-
-public:
 	Camera camera;
 
 	Player(ivec3 start = ivec3(0, 32, 0)) : camera{ start } {}
@@ -33,8 +30,11 @@ public:
 	// modifies the selected Raycast field with this information
 	bool selectBlock(World & world);
 
-	inline ivec3 getSelected() const {
-		return selected.coords;
+	const Raycast& getSelected() {
+		return selected;
 	}
+
+private:
+	Raycast selected{ false, vec3(0), vec3(0) };
 };
 

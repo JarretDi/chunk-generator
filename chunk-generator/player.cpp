@@ -55,5 +55,6 @@ bool Player::selectBlock(World & world) {
 		}
 	}
 
+	selected.hit = false;
 	return false;
 }

@@ -61,5 +61,7 @@ public:
 	Block::BlockDef getBlockDef(ivec3 worldPosition) const;
 
 	bool removeBlockAt(ivec3 worldPosition);
+
+	Block::BlockType placeBlockAt(ivec3 worldPosition, Block::BlockType type);
 };
 

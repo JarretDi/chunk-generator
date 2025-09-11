@@ -72,45 +72,49 @@ public:
 
 	void draw() const;
 
-	inline const Block::BlockDef& getBlockDef(ivec3 coords) const {
-		using Block::BlockRegistry;
-
+	int getBlockIndex(const ivec3 & coords) const {
 		const bool outOfBounds =
 			coords.x < 0 || coords.x >= CHUNK_MAX_X ||
 			coords.y < 0 || coords.y >= CHUNK_MAX_Y ||
 			coords.z < 0 || coords.z >= CHUNK_MAX_Z;
+		if (outOfBounds)
+			return -1;
 
-		if (outOfBounds) 
-			return BlockRegistry::getInstance().getDef(0);
+		return coords.x + CHUNK_MAX_X * (coords.y + CHUNK_MAX_Y * coords.z);
+	}
 
-		int index = coords.x + CHUNK_MAX_X * (coords.y + CHUNK_MAX_Y * coords.z);
+	inline const Block::BlockDef& getBlockDef(ivec3 coords) const {
+		using Block::BlockRegistry;
+		static const Block::BlockDef& airDef = BlockRegistry::getInstance().getDef(0);
+
+		int index = getBlockIndex(coords);
+		if (index == -1) return airDef;
+
 		Block::BlockType type = blocks[index];
 
 		return BlockRegistry::getInstance().getDef(type);
 	}
 
 	inline bool removeBlock(ivec3 coords) {
-		const bool outOfBounds =
-			coords.x < 0 || coords.x >= CHUNK_MAX_X ||
-			coords.y < 0 || coords.y >= CHUNK_MAX_Y ||
-			coords.z < 0 || coords.z >= CHUNK_MAX_Z;
-
-		if (outOfBounds)
-			return false;
-
-
-		int index = coords.x + CHUNK_MAX_X * (coords.y + CHUNK_MAX_Y * coords.z);
-		std::cout << "Block ID before removal: " << +blocks[index] << std::endl;
-		std::cout << "BlockDef: " << getBlockDef(coords).name << std::endl;
+		int index = getBlockIndex(coords);
+		if (index == -1) return false;
 
 		blocks[index] = 0;
-
-		std::cout << "Block ID after removal: " << +blocks[index] << std::endl;
-		std::cout << "BlockDef: " << getBlockDef(coords).name << std::endl;
 
 		updateMesh();
 
 		return true;
+	}
+
+	inline Block::BlockType placeBlock(ivec3 coords, Block::BlockType type) {
+		int index = getBlockIndex(coords);
+		if (index == -1) return 0;
+
+		blocks[index] = type;
+
+		updateMesh();
+
+		return type;
 	}
 
 	inline ivec3 getModelCoords() const {

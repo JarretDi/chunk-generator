@@ -20,10 +20,10 @@ Chunk::Chunk(uint32_t seed, int worldx, int worldz) : seed(seed), worldx(worldx)
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
 	glEnableVertexAttribArray(2);
 
-	std::cout << "Chunk at (" << worldx << ", " << worldz << "): " << VAO << ", " << VBO << "\n";
-
 	updateMesh();
 	glBindVertexArray(0);
+
+	//std::cerr << "Chunk at (" << worldx << ", " << worldz << ") constructed successfully!" << std::endl;
 }
 
 Chunk::~Chunk() {
