@@ -78,6 +78,14 @@ void process_mouse_movement(GLFWwindow* window, double xPos, double yPos) {
 	gPlayer->camera.ProcessMouseMovement(xOffset, yOffset, true);
 }
 
+void process_mouse_click(GLFWwindow* window, int button, int action, int mods) {
+
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && gPlayer->selectBlock(*gWorld)) {
+		ivec3 blockCoords = gPlayer->getSelected();
+		gWorld->removeBlockAt(blockCoords);
+	}
+}
+
 void initialize() {
 	glfwInit();
 	glfwWindowHint(GLFW_VERSION_MAJOR, 3);
@@ -101,6 +109,7 @@ void initialize() {
 	glfwSetFramebufferSizeCallback(window, &frame_buffer_size_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window, &process_mouse_movement);
+	glfwSetMouseButtonCallback(window, &process_mouse_click);
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
@@ -165,7 +174,7 @@ void draw(Shader& blockShader, glm::vec3& lightColour)
 	glm::vec3 diffuseColor = lightColour * glm::vec3(0.5f);
 	glm::vec3 specularColour = glm::vec3(1.0f);
 
-	glm::vec3 lightDir = glm::normalize(view * glm::vec4(cos(glfwGetTime() / 2), sin(glfwGetTime() / 2), 0.2f, 0.0f));
+	glm::vec3 lightDir = glm::normalize(view * glm::vec4(cos(glfwGetTime() / 2.0f), 0.2f, sin(glfwGetTime() / 2.0f), 0.0f));
 	blockShader.setVec3("light.ambient", ambientColor);
 	blockShader.setVec3("light.diffuse", diffuseColor);
 	blockShader.setVec3("light.specular", specularColour);
@@ -176,6 +185,24 @@ void draw(Shader& blockShader, glm::vec3& lightColour)
 }
 
 void drawBlockOutline(vec3 coords) {
+	static unsigned int VAO = 0, VBO = 0;
+	if (VAO == 0) {
+
+		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &VBO);
+
+		glBindVertexArray(VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(Block::cubeVertices), Block::cubeVertices, GL_STATIC_DRAW);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+
+		std::cout << "Outline VAO/VBO:" << VAO << ", " << VBO << "\n";
+	}
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
 	static Shader outlineShader("chunk-generator/shader.vs", "chunk-generator/outline.fs");
 	outlineShader.use();
 
@@ -190,21 +217,6 @@ void drawBlockOutline(vec3 coords) {
 	outlineShader.setMat4("view", view);
 	outlineShader.setMat4("projection", projection);
 
-	static unsigned int VAO = 0, VBO = 0;
-	if (VAO == 0) {
-
-		glGenVertexArrays(1, &VAO);
-		glGenBuffers(1, &VBO);
-
-		glBindVertexArray(VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(Block::cubeVertices), Block::cubeVertices, GL_STATIC_DRAW);
-
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0);
-	}
-
-	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);
 }
@@ -269,7 +281,7 @@ int main() {
 	std::cout << "Vertex size:" << sizeof(Vertex) << std::endl;
 	std::cout << "Vertex2 size:" << sizeof(Vertex2) << std::endl;
 
-	glm::vec3 lightColour(1.0f);
+	glm::vec3 lightColour(1.0f, 1.0f, 0.0f);
 
 	while (!glfwWindowShouldClose(window)) {
 		float currentFrame = glfwGetTime();
@@ -277,8 +289,11 @@ int main() {
 		lastFrame = currentFrame;
 
 		process_input(window);
+		
+		glm::vec4 skyColour(0.3, 0.75, 0.85, 1.0); // shade of blue
+		skyColour *= glm::dot(glm::normalize(glm::vec3(cos(glfwGetTime() / 2.0f), 0.2f, sin(glfwGetTime() / 2.0f))), {0, 1, 0});
 
-		glClearColor(0.3, 0.75, 0.85, 1.0);
+		glClearColor(skyColour.r, skyColour.g, skyColour.b, skyColour.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		world.update();
